@@ -15,22 +15,18 @@ Plugin que transforma o Claude Code numa fábrica de posts, carrosséis, stories
 | `METRICOOL_TOKEN`, `METRICOOL_USER_ID`, `METRICOOL_BLOG_ID` | [Metricool](https://metricool.com) (plano com API) | **Agendar em todas as redes** sem deixar o computador ligado |
 | `META_PAGE_ID`, `META_PAGE_TOKEN`, `IG_USER_ID` | App da Meta | Publicação direta no Instagram/Facebook (alternativa ao Metricool) |
 
-## Publicar este repositório (uma vez)
-Crie um repositório **privado** vazio no GitHub chamado `creasy-plugins` e, nesta pasta:
-```bash
-git init && git add . && git commit -m "Fábrica de conteúdo v0.1.0"
-git branch -M main
-git remote add origin https://github.com/SEU-USUARIO/creasy-plugins.git
-git push -u origin main
-```
+## Instalar em qualquer computador
+Repositório: **github.com/creasycomunidade/fabrica-de-conteudo** (privado). O computador precisa estar logado no GitHub com uma conta que tenha acesso a ele (convide a pessoa em Settings → Collaborators).
 
-## Instalar em qualquer Claude Code
-A máquina precisa ter acesso ao repositório privado (login no GitHub via `git`/Git Credential Manager).
+**Jeito mais fácil:** abra o Claude Code numa pasta vazia (ex.: `C:\Conteudo`) e peça:
+> Instale o plugin fabrica-conteudo do repositório creasycomunidade/fabrica-de-conteudo e rode o setup nesta pasta.
+
+**Ou pelo terminal:**
 ```bash
-claude plugin marketplace add SEU-USUARIO/creasy-plugins
+claude plugin marketplace add creasycomunidade/fabrica-de-conteudo
 claude plugin install fabrica-conteudo@creasy
 ```
-Depois, abra o Claude Code numa pasta vazia (ex.: `C:\Conteudo`) e rode `/fabrica-conteudo:setup`.
+Depois, numa sessão nova do Claude Code nessa pasta, rode `/fabrica-conteudo:setup`. No fim, dê dois cliques em **Abrir Estudio**.
 
 Para atualizar depois de um `git push` novo: `claude plugin marketplace update creasy` e rode `/fabrica-conteudo:setup` de novo na pasta de trabalho (não apaga clientes, saídas nem fila).
 
