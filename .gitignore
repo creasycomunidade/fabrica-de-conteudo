@@ -1,0 +1,10 @@
+node_modules/
+# Pasta de trabalho: dados de clientes e chaves nunca vão para o repositório do plugin
+.env
+*.env
+clientes/
+saida/
+fila/
+/motor/
+/estudio/
+/Abrir Estudio.cmd

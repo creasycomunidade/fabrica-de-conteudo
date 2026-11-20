@@ -1,0 +1,31 @@
+{
+  "cliente": "lumina",
+  "tipo": "post",
+  "formato": "quadrado",
+  "arquivos": [
+    "01.png"
+  ],
+  "legenda": "Ritual noturno.\n\n#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:28.404Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "post",
+    "formato": "quadrado",
+    "saida": "saida/lumina/vitrine/03-editorial",
+    "slides": [
+      {
+        "layout": "editorial",
+        "produto": "creme",
+        "palavra": "Noite",
+        "meta": [
+          "Coleção",
+          "Ritual noturno",
+          "2026"
+        ],
+        "titulo": "Acorde com a pele *descansada*"
+      }
+    ],
+    "legenda": "Ritual noturno."
+  }
+}

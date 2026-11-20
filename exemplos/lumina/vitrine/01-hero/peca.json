@@ -1,0 +1,28 @@
+{
+  "cliente": "lumina",
+  "tipo": "post",
+  "formato": "retrato",
+  "arquivos": [
+    "01.png"
+  ],
+  "legenda": "O sérum que virou o primeiro passo da rotina.\n\n#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:25.651Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "post",
+    "saida": "saida/lumina/vitrine/01-hero",
+    "slides": [
+      {
+        "layout": "hero",
+        "produto": "serum",
+        "eyebrow": "Novo · Vitamina C 20%",
+        "titulo": "Pele *luminosa*\nem 4 semanas",
+        "texto": "Antioxidante estável que uniformiza o tom e devolve o viço.",
+        "mostrarPreco": true,
+        "cta": "Comprar agora"
+      }
+    ],
+    "legenda": "O sérum que virou o primeiro passo da rotina."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "cliente": "lumina",
+  "tipo": "post",
+  "formato": "retrato",
+  "arquivos": [
+    "01.png"
+  ],
+  "legenda": "Últimos dias.\n\n#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:27.245Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "post",
+    "saida": "saida/lumina/vitrine/02-oferta",
+    "slides": [
+      {
+        "layout": "oferta",
+        "estilo": "vibrante",
+        "produto": "serum",
+        "faixa": "Semana da pele · só até domingo",
+        "eyebrow": "Oferta de lançamento",
+        "titulo": "Seu sérum\n*21% off*",
+        "selo": "-21%",
+        "cta": "Garantir o meu"
+      }
+    ],
+    "legenda": "Últimos dias."
+  }
+}

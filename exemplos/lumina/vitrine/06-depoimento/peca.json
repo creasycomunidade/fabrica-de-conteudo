@@ -1,0 +1,27 @@
+{
+  "cliente": "lumina",
+  "tipo": "post",
+  "formato": "quadrado",
+  "arquivos": [
+    "01.png"
+  ],
+  "legenda": "Quem usa, conta.\n\n#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:31.725Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "post",
+    "formato": "quadrado",
+    "saida": "saida/lumina/vitrine/06-depoimento",
+    "slides": [
+      {
+        "layout": "depoimento",
+        "produto": "serum",
+        "titulo": "Em três semanas minha pele *ganhou vida*.",
+        "autor": "Mariana C.",
+        "detalhe": "Cliente verificada · São Paulo"
+      }
+    ],
+    "legenda": "Quem usa, conta."
+  }
+}

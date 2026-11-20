@@ -1,0 +1,11 @@
+{
+  "name": "fabrica-conteudo-motor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "gsap": "^3.13.0",
+    "puppeteer-core": "^23.11.1"
+  }
+}

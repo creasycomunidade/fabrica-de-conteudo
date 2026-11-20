@@ -1,0 +1,66 @@
+{
+  "cliente": "lumina",
+  "tipo": "reel",
+  "formato": "story",
+  "arquivos": [
+    "video.mp4"
+  ],
+  "legenda": "Pele luminosa sem complicação.\n\n#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:52:30.684Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "reel",
+    "saida": "saida/lumina/vitrine/09-reel",
+    "legenda": "Pele luminosa sem complicação.",
+    "cenas": [
+      {
+        "layout": "impacto",
+        "titulo": "Pele *opaca*\nde novo?",
+        "duracao": 2.2
+      },
+      {
+        "layout": "hero",
+        "produto": "serum",
+        "eyebrow": "Vitamina C 20%",
+        "titulo": "Conheça o\n*Sérum Lumina*",
+        "duracao": 3
+      },
+      {
+        "layout": "beneficios",
+        "produto": "serum",
+        "titulo": "Em *4 semanas*",
+        "itens": [
+          {
+            "icone": "brilho",
+            "texto": "Mais viço"
+          },
+          {
+            "icone": "gota",
+            "texto": "Tom uniforme"
+          },
+          {
+            "icone": "escudo",
+            "texto": "Antioxidante"
+          }
+        ],
+        "duracao": 3.2
+      },
+      {
+        "layout": "oferta",
+        "produto": "serum",
+        "faixa": "Lançamento",
+        "titulo": "Só esta *semana*",
+        "selo": "-21%",
+        "duracao": 3
+      },
+      {
+        "layout": "cta",
+        "produto": "serum",
+        "titulo": "Sua pele\n*agradece*",
+        "cta": "Link na bio",
+        "duracao": 2.8
+      }
+    ]
+  }
+}

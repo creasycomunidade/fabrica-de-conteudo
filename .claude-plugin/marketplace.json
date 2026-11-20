@@ -1,0 +1,11 @@
+{
+  "name": "creasy",
+  "owner": { "name": "Creasy" },
+  "plugins": [
+    {
+      "name": "fabrica-conteudo",
+      "source": "./plugins/fabrica-conteudo",
+      "description": "Fábrica de conteúdo para redes sociais: posts, carrosséis, stories e reels com o produto fiel, legenda, calendário e publicação agendada no Instagram/Facebook."
+    }
+  ]
+}

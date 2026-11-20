@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520" width="1200" height="1040">
+<defs>
+<linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#6e4f1c"/><stop offset=".2" stop-color="#d9b46a"/><stop offset=".32" stop-color="#fff0c8"/><stop offset=".5" stop-color="#c79a48"/><stop offset=".82" stop-color="#8a6426"/><stop offset="1" stop-color="#4a3210"/></linearGradient>
+<linearGradient id="vid" x1="0" x2="1"><stop offset="0" stop-color="#bfb8ad"/><stop offset=".22" stop-color="#f4f0ea"/><stop offset=".42" stop-color="#ffffff"/><stop offset=".7" stop-color="#e9e3d9"/><stop offset="1" stop-color="#a9a194"/></linearGradient>
+<linearGradient id="fai" x1="0" x2="1"><stop offset="0" stop-color="#120c08"/><stop offset=".3" stop-color="#3a2a1e"/><stop offset=".5" stop-color="#4a3627"/><stop offset=".8" stop-color="#2a1e15"/><stop offset="1" stop-color="#0d0805"/></linearGradient>
+<linearGradient id="topo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="b6"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<rect x="70" y="168" width="460" height="322" rx="44" fill="url(#vid)"/>
+<rect x="70" y="262" width="460" height="138" fill="url(#fai)"/>
+<text x="300" y="320" font-family="Georgia,serif" font-size="40" letter-spacing="10" text-anchor="middle" fill="#E8B96A">LUMINA</text>
+<text x="300" y="356" font-family="Arial,sans-serif" font-weight="700" font-size="15" letter-spacing="4" text-anchor="middle" fill="#f7f1e8">CREME NOTURNO RENOVADOR</text>
+<text x="300" y="384" font-family="Arial,sans-serif" font-size="12" letter-spacing="2" text-anchor="middle" fill="#cbbfae">50 g · 1.7 oz</text>
+<rect x="98" y="190" width="22" height="280" rx="11" fill="#fff" opacity=".6" filter="url(#b6)"/>
+<rect x="88" y="38" width="424" height="136" rx="20" fill="url(#gold)"/>
+<rect x="88" y="38" width="424" height="40" rx="20" fill="url(#topo)"/>
+<rect x="88" y="150" width="424" height="4" fill="#3d2a0c" opacity=".3"/>
+</svg>

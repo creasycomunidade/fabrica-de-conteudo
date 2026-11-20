@@ -1,0 +1,52 @@
+{
+  "cliente": "lumina",
+  "tipo": "carrossel",
+  "formato": "retrato",
+  "arquivos": [
+    "01.png",
+    "02.png",
+    "03.png",
+    "04.png",
+    "05.png"
+  ],
+  "legenda": "Salva para não esquecer.\n\n#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:35.682Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "carrossel",
+    "saida": "saida/lumina/vitrine/07-carrossel",
+    "legenda": "Salva para não esquecer.",
+    "slides": [
+      {
+        "layout": "capa",
+        "produto": "serum",
+        "eyebrow": "Guia rápido",
+        "titulo": "3 erros que apagam sua *vitamina C*",
+        "texto": "O terceiro quase todo mundo comete."
+      },
+      {
+        "layout": "lista",
+        "titulo": "Guardar perto da luz",
+        "texto": "Luz e calor oxidam o ativo. Guarde o frasco fechado, longe da janela."
+      },
+      {
+        "layout": "lista",
+        "titulo": "Usar só à noite",
+        "texto": "Ela potencializa o protetor solar. O melhor momento é *de manhã*."
+      },
+      {
+        "layout": "lista",
+        "titulo": "Misturar com ácidos",
+        "texto": "Evite usar junto com AHA ou BHA na mesma rotina."
+      },
+      {
+        "layout": "cta",
+        "produto": "serum",
+        "eyebrow": "Agora você já sabe",
+        "titulo": "Comece do *jeito certo*",
+        "cta": "Link na bio"
+      }
+    ]
+  }
+}

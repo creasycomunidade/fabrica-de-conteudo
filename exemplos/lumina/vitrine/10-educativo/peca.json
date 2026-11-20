@@ -1,0 +1,146 @@
+{
+  "cliente": "norte",
+  "tipo": "carrossel",
+  "formato": "retrato",
+  "arquivos": [
+    "01.png",
+    "02.png",
+    "03.png",
+    "04.png",
+    "05.png",
+    "06.png"
+  ],
+  "legenda": "Salva e manda pra quem cuida do seu Instagram.\n\n#marketingdigital #socialmedia #ia",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:39.801Z",
+  "spec": {
+    "cliente": "norte",
+    "tipo": "carrossel",
+    "saida": "saida/lumina/vitrine/10-educativo",
+    "legenda": "Salva e manda pra quem cuida do seu Instagram.",
+    "slides": [
+      {
+        "layout": "capa",
+        "eyebrow": "Guia rápido · 6 slides",
+        "titulo": "5 ferramentas pra *turbinar* seu marketing",
+        "texto": "Testadas no dia a dia de uma agência pequena."
+      },
+      {
+        "layout": "cards",
+        "eyebrow": "Etapa 1 de 3 · Criar",
+        "titulo": "Fazer os *posts*",
+        "texto": "Arte, vídeo e texto sem abrir o editor.",
+        "imagem": "imagens/fluxo.svg",
+        "abas": [
+          "Criar",
+          "Editar",
+          "Publicar",
+          "Medir"
+        ],
+        "aba": 0,
+        "itens": [
+          {
+            "icone": "camadas",
+            "nome": "Fábrica",
+            "papel": "Diretor de arte",
+            "texto": "Posts e carrosséis com a cara da marca",
+            "numero": "01",
+            "selo": "grátis"
+          },
+          {
+            "icone": "brilho",
+            "nome": "Nano Banana",
+            "papel": "Ilustrador",
+            "texto": "Ilustrações e fundos sem texto",
+            "numero": "02",
+            "selo": "pago"
+          },
+          {
+            "icone": "audio",
+            "nome": "ElevenLabs",
+            "papel": "Locutor",
+            "texto": "Transforma o roteiro em narração",
+            "numero": "03",
+            "selo": "pago"
+          },
+          {
+            "icone": "chat",
+            "nome": "Whisper",
+            "papel": "Legendador",
+            "texto": "Legenda qualquer vídeo gravado",
+            "numero": "04",
+            "selo": "pago"
+          },
+          {
+            "icone": "calendario",
+            "nome": "Metricool",
+            "papel": "Agendador",
+            "texto": "Publica em todas as redes no horário",
+            "numero": "05",
+            "selo": "plano"
+          }
+        ]
+      },
+      {
+        "layout": "comparativo",
+        "eyebrow": "O que muda",
+        "titulo": "Tempo por *carrossel*",
+        "antes": {
+          "rotulo": "Sem a fábrica",
+          "legenda": "Tempo médio",
+          "valor": "3h",
+          "texto": "Briefing, arte, revisão e legenda"
+        },
+        "depois": {
+          "rotulo": "Com a fábrica",
+          "legenda": "Tempo médio",
+          "valor": "25min",
+          "texto": "Você revisa, ajusta e aprova"
+        }
+      },
+      {
+        "layout": "mockup",
+        "etiqueta": "Aprovação",
+        "titulo": "Uma página pra *aprovar* tudo",
+        "imagem": "imagens/tela.jpg",
+        "url": "revisao.html",
+        "itens": [
+          {
+            "icone": "check",
+            "nome": "Todas as peças",
+            "texto": "posts, carrosséis e reels"
+          },
+          {
+            "icone": "chat",
+            "nome": "Com legenda",
+            "texto": "pronta pra copiar"
+          },
+          {
+            "icone": "link",
+            "nome": "Um arquivo só",
+            "texto": "manda por e-mail ou zip"
+          },
+          {
+            "icone": "calendario",
+            "nome": "Status",
+            "texto": "o que já foi agendado"
+          }
+        ]
+      },
+      {
+        "layout": "topico",
+        "numero": "05",
+        "titulo": "/legendar",
+        "imagem": "imagens/fluxo.svg",
+        "texto": "Grava, transcreve e coloca *legenda palavra a palavra* com a fonte da marca.",
+        "icone": "raio"
+      },
+      {
+        "layout": "comente",
+        "titulo": "Quer o passo a passo *completo*?",
+        "texto": "Mando o guia de instalação com os links oficiais.",
+        "palavra": "FÁBRICA"
+      }
+    ]
+  }
+}

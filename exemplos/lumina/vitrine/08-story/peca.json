@@ -1,0 +1,27 @@
+{
+  "cliente": "lumina",
+  "tipo": "story",
+  "formato": "story",
+  "arquivos": [
+    "01.png"
+  ],
+  "legenda": "#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:37.309Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "story",
+    "saida": "saida/lumina/vitrine/08-story",
+    "slides": [
+      {
+        "layout": "hero",
+        "produto": "serum",
+        "eyebrow": "Chegou",
+        "titulo": "O brilho que\nfaltava na *rotina*",
+        "mostrarPreco": true,
+        "cta": "Arraste para cima"
+      }
+    ],
+    "legenda": ""
+  }
+}

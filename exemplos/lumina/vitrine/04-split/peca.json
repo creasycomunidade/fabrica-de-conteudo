@@ -1,0 +1,29 @@
+{
+  "cliente": "lumina",
+  "tipo": "post",
+  "formato": "retrato",
+  "arquivos": [
+    "01.png"
+  ],
+  "legenda": "Renovação noturna.\n\n#skincare #vitaminac #cuidadoscomapele #lumina",
+  "avisos": [],
+  "criado": "2026-11-17T02:51:29.368Z",
+  "spec": {
+    "cliente": "lumina",
+    "tipo": "post",
+    "saida": "saida/lumina/vitrine/04-split",
+    "slides": [
+      {
+        "layout": "split",
+        "estilo": "clean",
+        "produto": "creme",
+        "eyebrow": "Creme noturno",
+        "titulo": "Renova enquanto você *dorme*",
+        "texto": "Peptídeos e ceramidas em textura que não pesa.",
+        "mostrarPreco": true,
+        "cta": "Conhecer"
+      }
+    ],
+    "legenda": "Renovação noturna."
+  }
+}

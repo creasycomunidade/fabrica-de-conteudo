@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estúdio · Fábrica de Conteúdo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+<div class="app">
+  <aside class="lateral">
+    <a class="marca" href="#/inicio"><span class="logo-q">F</span><span>Estúdio<small>Fábrica de Conteúdo</small></span></a>
+    <nav id="menu">
+      <a href="#/inicio" data-r="inicio"><i data-i="casa"></i>Início</a>
+      <a href="#/criar" data-r="criar"><i data-i="brilho"></i>Criar com IA</a>
+      <a href="#/pecas" data-r="pecas"><i data-i="grade"></i>Peças</a>
+      <div class="sep">Editar</div>
+      <a href="#/videos" data-r="videos"><i data-i="video"></i>Vídeos gravados</a>
+      <a href="#/audios" data-r="audios"><i data-i="audio"></i>Áudios</a>
+      <a href="#/roteiros" data-r="roteiros"><i data-i="doc"></i>Roteiros e pautas</a>
+      <div class="sep">Gestão</div>
+      <a href="#/clientes" data-r="clientes"><i data-i="pessoas"></i>Clientes</a>
+      <a href="#/ajustes" data-r="ajustes"><i data-i="engrenagem"></i>Ajustes</a>
+    </nav>
+    <button class="tarefas" id="btnTarefas" hidden><span class="pulso"></span><span id="txtTarefas">0 tarefas</span></button>
+  </aside>
+  <main>
+    <header class="topo">
+      <label class="seletor"><span class="bolinha" id="corCliente"></span><select id="selCliente" aria-label="Cliente atual"></select></label>
+      <div class="topo-acoes">
+        <a class="btn ghost" href="#/criar"><i data-i="mais"></i>Novo conteúdo</a>
+      </div>
+    </header>
+    <section id="tela" tabindex="-1"></section>
+  </main>
+</div>
+<div id="modal" class="modal" hidden><div class="caixa" role="dialog" aria-modal="true"></div></div>
+<div id="aviso" class="aviso" role="status" aria-live="polite"></div>
+<script src="/app.js" type="module"></script>
+</body>
+</html>
