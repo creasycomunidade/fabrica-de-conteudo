@@ -1,11 +1,15 @@
 {
   "name": "creasy",
-  "owner": { "name": "Creasy" },
+  "owner": {
+    "name": "Comunidade CRΞΛSY",
+    "url": "https://github.com/creasycomunidade"
+  },
   "plugins": [
     {
       "name": "fabrica-conteudo",
       "source": "./plugins/fabrica-conteudo",
-      "description": "Fábrica de conteúdo para redes sociais: posts, carrosséis, stories e reels com o produto fiel, legenda, calendário e publicação agendada no Instagram/Facebook."
+      "description": "Fábrica de Conteúdo CRΞΛSY: posts, carrosséis, stories e reels com o produto fiel, legenda, roteiro, áudio, edição de vídeo, Estúdio no navegador e agendamento."
     }
-  ]
+  ],
+  "description": "Plugins da comunidade CRΞΛSY para Claude Code"
 }

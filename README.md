@@ -1,6 +1,10 @@
-# Creasy · Fábrica de conteúdo para Claude Code
+<p align="center"><img src="plugins/fabrica-conteudo/estudio/public/marca/icone.svg" width="96" alt="Fábrica CRΞΛSY"></p>
 
-Plugin que transforma o Claude Code numa fábrica de posts, carrosséis, stories e reels, com a foto real do produto, legenda, calendário e publicação agendada no Instagram e Facebook.
+<h1 align="center">Fábrica de Conteúdo CRΞΛSY</h1>
+
+<p align="center">Um projeto aberto da <b>comunidade CRΞΛSY</b> que transforma o Claude Code numa fábrica de posts, carrosséis, stories e reels, com a foto real do produto, legenda, roteiro, áudio e agendamento. Para quem programa (comandos) e para quem não programa (Estúdio no navegador).</p>
+
+<p align="center"><a href="LICENSE">Licença Apache 2.0</a> · <a href="CREDITS.md">Créditos</a> · <a href="NOTICE">NOTICE</a></p>
 
 ## O que precisa em cada máquina
 O próprio setup faz a **análise de requisitos** (`plugins/fabrica-conteudo/instalar/requisitos.mjs`), mostra o que falta e instala com o seu ok:
@@ -93,3 +97,12 @@ plugins/fabrica-conteudo/
   estudio/         servidor.mjs + public/ (interface no navegador) e atalhos Abrir Estudio
   motor/           render.mjs, templates.mjs, revisao.mjs, imagem.mjs, fonte.mjs, voz.mjs, metricool.mjs, publicar.mjs, ia.mjs, teste.mjs, demo/
 ```
+
+## Licença e créditos
+Este é um projeto **da comunidade, para a comunidade**: use, adapte e distribua à vontade, inclusive comercialmente, sob a [Licença Apache 2.0](LICENSE). A única condição é **manter os créditos**:
+
+- mantenha os arquivos [`NOTICE`](NOTICE), [`CREDITS.md`](CREDITS.md) e [`LICENSE`](LICENSE) em qualquer cópia ou versão modificada;
+- cite a origem no seu projeto, por exemplo: *"Baseado na [Fábrica de Conteúdo da Comunidade CRΞΛSY](https://github.com/creasycomunidade/fabrica-de-conteudo)"*;
+- não use o nome ou os logotipos CRΞΛSY como marca do seu projeto (eles não fazem parte da licença).
+
+A lista completa de bibliotecas, ferramentas, modelos, fontes e serviços de terceiros que usamos, com autor e licença de cada um, está em [`CREDITS.md`](CREDITS.md).

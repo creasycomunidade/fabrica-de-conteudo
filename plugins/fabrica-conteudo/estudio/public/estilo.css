@@ -1,12 +1,12 @@
 :root{
   --bg:#F5F4F1;--sup:#FFFFFF;--sup2:#FAF9F7;--linha:#E7E4DF;--ink:#17161A;--muted:#6E6A64;--fraco:#9C978F;
-  --ac:#6C47FF;--ac2:#EFEAFF;--ok:#16A34A;--ok2:#E8F6EE;--alerta:#B45309;--alerta2:#FFF4E5;--erro:#DC2626;--erro2:#FDECEC;
+  --ac:#ff7a00;--ac2:#FFF1E5;--on-ac:#0b0b0b;--ok:#16A34A;--ok2:#E8F6EE;--alerta:#B45309;--alerta2:#FFF4E5;--erro:#DC2626;--erro2:#FDECEC;
   --r:14px;--r2:10px;--sombra:0 1px 2px rgba(20,16,10,.05),0 6px 20px rgba(20,16,10,.06);
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root{
-  --bg:#121114;--sup:#1B1A1F;--sup2:#222127;--linha:#2E2C33;--ink:#F2F0EC;--muted:#A7A29B;--fraco:#78736C;
-  --ac:#8F75FF;--ac2:#2A2440;--ok2:#14281C;--alerta2:#2E2312;--erro2:#341818;--sombra:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3);color-scheme:dark}}
+  --bg:#080808;--sup:#141414;--sup2:#1c1c1c;--linha:#303132;--ink:#f5f5f5;--muted:#b8b8b8;--fraco:#7d7d7d;
+  --ac:#ff7a00;--ac2:#2a1708;--ok2:#14281C;--alerta2:#2E2312;--erro2:#341818;--sombra:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3);color-scheme:dark}}
 *{box-sizing:border-box;margin:0}
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -19,7 +19,10 @@ i[data-i] svg{width:100%;height:100%}
 .lateral{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px;padding:18px 14px;background:var(--sup);border-right:1px solid var(--linha)}
 .marca{display:flex;align-items:center;gap:10px;padding:6px 8px 18px;font-weight:800;font-size:16px}
 .marca small{display:block;font-weight:500;font-size:11.5px;color:var(--muted)}
-.logo-q{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--ac),#FF4F9A);color:#fff;font-weight:800}
+.marca img{width:36px;height:36px;flex:none}
+.marca small b{color:var(--ac);font-weight:800}
+.creditos{font-size:12px;color:var(--fraco);margin-top:18px;line-height:1.6}
+.creditos a{color:var(--ac)}
 #menu{display:flex;flex-direction:column;gap:2px}
 #menu a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--muted);font-weight:500}
 #menu a:hover{background:var(--sup2);color:var(--ink)}
@@ -42,7 +45,7 @@ h2{font-size:17px;font-weight:700;letter-spacing:-.01em}
 h3{font-size:14.5px;font-weight:700}
 .sub{color:var(--muted);margin-top:4px}
 .cab{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:10px;border:1px solid transparent;background:var(--ac);color:#fff;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:10px;border:1px solid transparent;background:var(--ac);color:var(--on-ac);font-weight:700;cursor:pointer;white-space:nowrap}
 .btn:hover{filter:brightness(1.07)}
 .btn:disabled{opacity:.55;cursor:not-allowed}
 .btn.ghost{background:var(--sup);color:var(--ink);border-color:var(--linha)}
@@ -110,7 +113,7 @@ textarea.inp{resize:vertical;min-height:84px;line-height:1.45}
 .icobtn:hover{color:var(--ink)}.icobtn i{width:15px;height:15px}
 .log{background:#0f0e12;color:#d8d4cc;border-radius:var(--r2);padding:12px 14px;font:12px/1.55 ui-monospace,Consolas,monospace;max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-word}
 .progresso{height:6px;border-radius:9px;background:var(--sup2);overflow:hidden}
-.progresso span{display:block;height:100%;width:35%;background:linear-gradient(90deg,var(--ac),#FF4F9A);border-radius:9px;animation:vai 1.4s ease-in-out infinite}
+.progresso span{display:block;height:100%;width:35%;background:linear-gradient(90deg,var(--ac),#ffb066);border-radius:9px;animation:vai 1.4s ease-in-out infinite}
 @keyframes vai{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
 .modal{position:fixed;inset:0;z-index:50;background:rgba(10,8,14,.55);display:grid;place-items:center;padding:20px}
 .modal .caixa{background:var(--sup);border-radius:18px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
