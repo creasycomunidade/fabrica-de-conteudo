@@ -25,7 +25,7 @@ O próprio setup faz a **análise de requisitos** (`plugins/fabrica-conteudo/ins
 | `META_PAGE_ID`, `META_PAGE_TOKEN`, `IG_USER_ID` | App da Meta | Publicação direta no Instagram/Facebook (alternativa ao Metricool) |
 
 ## Instalar em qualquer computador
-Repositório: **github.com/creasycomunidade/fabrica-de-conteudo** (privado). O computador precisa estar logado no GitHub com uma conta que tenha acesso a ele (convide a pessoa em Settings → Collaborators).
+Repositório público: **github.com/creasycomunidade/fabrica-de-conteudo**. Não precisa de conta no GitHub para instalar.
 
 **Jeito mais fácil:** abra o Claude Code numa pasta vazia (ex.: `C:\Conteudo`) e peça:
 > Instale o plugin fabrica-conteudo do repositório creasycomunidade/fabrica-de-conteudo e rode o setup nesta pasta.
