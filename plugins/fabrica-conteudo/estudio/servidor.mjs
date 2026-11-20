@@ -440,10 +440,29 @@ rota('PUT', '/api/texto', async (req, b) => {
 });
 rota('GET', '/api/jobs', async () => [...jobs.values()].sort((a, b) => b.inicio - a.inicio).slice(0, 30).map(({ log, ...j }) => ({ ...j, ultima: log.at(-1) || '' })));
 rota('GET', '/api/jobs/:id', async (req, b, { id }) => { const j = jobs.get(id); if (!j) throw Object.assign(new Error('job não encontrado'), { status: 404 }); return j; });
+rota('GET', '/api/atalhos', async () => (await import('./atalhos.mjs')).status());
+rota('PUT', '/api/atalhos', async (req, b) => {
+  const a = await import('./atalhos.mjs');
+  if (b.desktop) a.criarDesktop();
+  if (typeof b.startup === 'boolean') a.iniciarComWindows(b.startup);
+  return a.status();
+});
+rota('POST', '/api/desligar', async () => {
+  if ([...jobs.values()].some(j => j.status === 'rodando')) throw Object.assign(new Error('Há tarefas em andamento. Espere terminar antes de desligar.'), { status: 409 });
+  setTimeout(() => process.exit(0), 300);
+  return { ok: true };
+});
 
+const porta = +(process.env.PORT || process.env.PORTA || cfg().porta);
+const HOSTS = new Set([`localhost:${porta}`, `127.0.0.1:${porta}`]);
 const srv = http.createServer(async (req, res) => {
   try {
     const u = new URL(req.url, 'http://x');
+    // Other websites open in the browser can reach localhost: reject foreign Host (DNS rebinding) and Origin,
+    // and require a custom header on every action, which cross-site pages cannot send without CORS.
+    if (!HOSTS.has(req.headers.host)) { res.writeHead(403); return res.end('host não permitido'); }
+    if (req.headers.origin && !HOSTS.has(req.headers.origin.replace(/^https?:\/\//, ''))) { res.writeHead(403); return res.end('origem não permitida'); }
+    if (req.method !== 'GET' && req.headers['x-estudio'] !== '1') { res.writeHead(403); return res.end('pedido sem cabeçalho do Estúdio'); }
     if (u.pathname.startsWith('/arquivos/')) return servirArquivo(req, res, seguro(decodeURIComponent(u.pathname.slice(10)), 'saida', 'clientes'));
     if (u.pathname.startsWith('/api/')) {
       for (const r of rotas) {
@@ -464,10 +483,17 @@ const srv = http.createServer(async (req, res) => {
   }
 });
 
-const porta = +(process.env.PORT || process.env.PORTA || cfg().porta);
+const end = `http://localhost:${porta}`;
+const abrirNavegador = () => spawn(process.platform === 'win32' ? 'explorer' : process.platform === 'darwin' ? 'open' : 'xdg-open', [end], { detached: true, stdio: 'ignore' }).unref();
+// Already running (shortcut clicked twice)? Just bring the browser back instead of failing.
+srv.on('error', async e => {
+  if (e.code !== 'EADDRINUSE') throw e;
+  const ehEstudio = await fetch(`${end}/api/estado`).then(r => r.ok).catch(() => false);
+  if (ehEstudio) { if (!process.argv.includes('--sem-navegador')) abrirNavegador(); console.log(`O Estúdio já está aberto em ${end}`); process.exit(0); }
+  console.error(`A porta ${porta} está ocupada por outro programa. Troque "porta" em estudio/config.json.`); process.exit(1);
+});
 // 127.0.0.1 only: the Estúdio has no login, so it must not be reachable from the network.
 srv.listen(porta, '127.0.0.1', () => {
-  const end = `http://localhost:${porta}`;
   console.log(`Estúdio da Fábrica aberto em ${end}  (feche esta janela para desligar)`);
-  if (!process.argv.includes('--sem-navegador')) spawn(process.platform === 'win32' ? 'explorer' : process.platform === 'darwin' ? 'open' : 'xdg-open', [end], { detached: true, stdio: 'ignore' }).unref();
+  if (!process.argv.includes('--sem-navegador')) abrirNavegador();
 });

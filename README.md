@@ -3,10 +3,15 @@
 Plugin que transforma o Claude Code numa fábrica de posts, carrosséis, stories e reels, com a foto real do produto, legenda, calendário e publicação agendada no Instagram e Facebook.
 
 ## O que precisa em cada máquina
-- Claude Code (o plano Pro basta para roteiro, texto, artes e vídeos animados)
-- Node.js 20 ou mais
-- Google Chrome ou Microsoft Edge
-- Opcionais (cada um liga um recurso, todos pagos por uso ou por plano):
+O próprio setup faz a **análise de requisitos** (`plugins/fabrica-conteudo/instalar/requisitos.mjs`), mostra o que falta e instala com o seu ok:
+
+| Nível | Itens |
+|---|---|
+| Obrigatório | Node.js 20+, Chrome ou Edge, Git, Claude Code com login |
+| Recomendado | Python 3.10+, FFmpeg, ffmpeg-skill, faster-whisper, 5 GB livres, internet |
+| Opcional | backgroundremover, skills de YouTube, skills de animação |
+
+- Chaves de serviços pagos, todas opcionais (preenchidas pela tela **Ajustes** do Estúdio, sem abrir arquivo): (cada um liga um recurso, todos pagos por uso ou por plano):
 
 | Chave (no `.env`) | Serviço | Para quê |
 |---|---|---|
@@ -26,12 +31,12 @@ Repositório: **github.com/creasycomunidade/fabrica-de-conteudo** (privado). O c
 claude plugin marketplace add creasycomunidade/fabrica-de-conteudo
 claude plugin install fabrica-conteudo@creasy
 ```
-Depois, numa sessão nova do Claude Code nessa pasta, rode `/fabrica-conteudo:setup`. No fim, dê dois cliques em **Abrir Estudio**.
+Depois, numa sessão nova do Claude Code nessa pasta, rode `/fabrica-conteudo:setup`. No fim aparece o ícone **Estúdio da Fábrica** na Área de Trabalho.
 
 Para atualizar depois de um `git push` novo: `claude plugin marketplace update creasy` e rode `/fabrica-conteudo:setup` de novo na pasta de trabalho (não apaga clientes, saídas nem fila).
 
 ## Estúdio (interface no navegador, para quem não programa)
-Dê dois cliques em **Abrir Estudio** na pasta de trabalho (ou rode `node estudio/servidor.mjs`). Abre em `http://localhost:3838`, só neste computador.
+Dê dois cliques no ícone **Estúdio da Fábrica** na Área de Trabalho (ou em **Abrir Estudio** na pasta). Abre no navegador em `http://localhost:3838`, sem janela preta, só neste computador; para fechar, use **Desligar Estúdio** na barra lateral. Em Ajustes dá para fazê-lo abrir junto com o Windows.
 
 | Tela | O que faz |
 |---|---|

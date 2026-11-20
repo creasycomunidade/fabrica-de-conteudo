@@ -24,7 +24,7 @@ const pintarIcones = (raiz = document) => $$('i[data-i]', raiz).forEach(i => { i
 // ---------- API ----------
 async function api(url, o = {}) {
   const bruto = o.body instanceof Blob;
-  const r = await fetch(url, { method: o.method || (o.body ? 'POST' : 'GET'), headers: o.body && !bruto ? { 'Content-Type': 'application/json' } : {}, body: o.body && !bruto ? JSON.stringify(o.body) : o.body });
+  const r = await fetch(url, { method: o.method || (o.body ? 'POST' : 'GET'), headers: { 'X-Estudio': '1', ...(o.body && !bruto ? { 'Content-Type': 'application/json' } : {}) }, body: o.body && !bruto ? JSON.stringify(o.body) : o.body });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.erro || `Erro ${r.status}`);
   return j;
@@ -103,6 +103,10 @@ async function atualizarTarefas() {
   } catch { /* server offline */ }
 }
 setInterval(atualizarTarefas, 4000);
+$('#btnDesligar').onclick = async () => {
+  if (!confirm('Desligar o Estúdio? Para abrir de novo, use o atalho "Estúdio da Fábrica".')) return;
+  try { await api('/api/desligar', { method: 'POST' }); document.body.innerHTML = '<div style="display:grid;place-items:center;height:100vh;font:600 18px Inter,system-ui;color:#888;text-align:center;padding:20px">Estúdio desligado.<br>Pode fechar esta aba.</div>'; } catch (e) { falhou(e); }
+};
 
 // ---------- componentes ----------
 function zonaSoltar(el, aceitar, aoEscolher, multiplo = false) {
@@ -550,10 +554,22 @@ async function telaAjustes() {
       ${st(f.ffmpegSkill, 'Editor de vídeo', 'Cortes, legenda, volume e formatos')}${st(f.fasterWhisper, 'Transcrição local', 'Legenda automática em português')}${st(f.backgroundremover, 'Recorte com IA', 'Tirar fundo de fotos com cenário')}</div>
       <label class="campo" style="margin-top:16px">Modelo da IA<small>Sonnet é rápido e econômico; Opus capricha mais.</small><select class="inp" id="modelo">${['sonnet', 'opus', 'haiku', 'fable'].map(m => `<option ${m === e.modelo ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
       <label class="campo" style="margin-top:12px">Conta da IA<small>"Minha conta do Claude" usa o login do Claude deste computador e ignora proxies configurados no Claude Code.</small><select class="inp" id="conta"><option value="claude" ${e.conta === 'claude' ? 'selected' : ''}>Minha conta do Claude (recomendado)</option><option value="sistema" ${e.conta === 'sistema' ? 'selected' : ''}>Configuração do Claude Code deste computador</option></select></label></div>
+    <div class="card form" id="cardAtalhos"><h2>Atalhos</h2><p class="sub">Abra o Estúdio como um aplicativo, sem janela preta.</p><div class="sub">Verificando…</div></div>
     <div class="card form"><h2>Chaves da agência</h2><p class="sub">Cole cada chave e clique em Salvar. Elas ficam só neste computador e nunca aparecem de novo na tela.</p>${ch('ELEVENLABS_API_KEY', 'ElevenLabs', 'Narração dos reels e áudios')}<label class="campo">Voz padrão<small>Usada quando a marca não tem voz própria. 🇧🇷 = português do Brasil</small><select class="inp" data-ch="ELEVENLABS_VOICE_ID" id="vozPadrao"><option value="">Carregando vozes…</option></select></label><div id="notaVoz"></div>${ch('FAL_KEY', 'fal.ai', 'Ilustrações e fundos com IA')}
       <div class="linha" style="justify-content:flex-end"><button class="btn" id="salvar">${ico('check')}Salvar</button></div></div></div>`;
   pintarIcones(tela);
   $('#salvar').onclick = async () => { const chaves = {}; for (const i of $$('[data-ch]')) if (i.value.trim()) chaves[i.dataset.ch] = i.value; try { await api('/api/estado', { method: 'PUT', body: { chaves, modelo: $('#modelo').value } }); aviso('Ajustes salvos'); telaAjustes(); } catch (er) { falhou(er); } };
+  const atalhos = async () => {
+    const el = $('#cardAtalhos'); if (!el) return;
+    const a = await api('/api/atalhos').catch(() => ({ suportado: false }));
+    el.innerHTML = `<h2>Atalhos</h2><p class="sub">Abra o Estúdio como um aplicativo, sem janela preta.</p>${a.suportado ? `
+      <div class="item"><span class="grow"><b>Atalho na Área de Trabalho</b><div class="sub" style="font-size:12.5px">"Estúdio da Fábrica", com ícone</div></span>${a.desktop ? '<span class="tag ok">criado</span>' : `<button class="btn peq" id="criarAtalho">${ico('mais')}Criar</button>`}</div>
+      <label class="item" style="cursor:pointer"><span class="grow"><b>Abrir quando o Windows ligar</b><div class="sub" style="font-size:12.5px">Fica pronto em segundo plano, sem abrir o navegador</div></span><input type="checkbox" id="startup" ${a.startup ? 'checked' : ''} style="width:20px;height:20px;accent-color:var(--ac)"></label>` : '<div class="nota">Atalhos automáticos só no Windows. No Mac, use "Abrir Estudio.command".</div>'}`;
+    pintarIcones(el);
+    $('#criarAtalho', el)?.addEventListener('click', async () => { try { await api('/api/atalhos', { method: 'PUT', body: { desktop: true } }); aviso('Atalho criado na Área de Trabalho'); atalhos(); } catch (er) { falhou(er); } });
+    $('#startup', el)?.addEventListener('change', async ev => { try { await api('/api/atalhos', { method: 'PUT', body: { startup: ev.target.checked } }); aviso(ev.target.checked ? 'O Estúdio vai abrir com o Windows' : 'Não abre mais com o Windows'); } catch (er) { falhou(er); ev.target.checked = !ev.target.checked; } });
+  };
+  atalhos();
   api('/api/vozes').then(r => {
     const sel = $('#vozPadrao'); if (!sel) return;
     const lista = r.vozes.length ? r.vozes : e.vozPadrao ? [{ id: e.vozPadrao, nome: `Voz atual (${e.vozPadrao})`, info: '' }] : [];
