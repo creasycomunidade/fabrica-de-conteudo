@@ -108,6 +108,22 @@ Quem não programa usa o Estúdio no navegador (`node estudio/servidor.mjs`, ata
 
 Campos: `cliente`, `nome`, `produto`, `personagem`, `referencia?`, `provedor?` (runway, google, hailuo, fal, higgsfield), `modelo?`, `voz?`, `musica?`, `legendas?`, `cenas: [{fala, cena, clip?}]`, `cartela?`, `legenda`, `hashtags`. Uma `cena` com `clip` usa um vídeo pronto (gravado pelo cliente) em vez de gerar. Tudo o que é pago fica em cache em `partes/`. Na conta gratuita do ElevenLabs só as vozes padrão (Sarah, Laura, Jessica…) funcionam pela API, e elas falam português com o modelo multilíngue.
 
+## Editor de vídeo
+Estúdio → Editor de vídeo. Cada projeto é uma pasta `saida/<cliente>/edicoes/<nome>/`:
+- `projeto.json` guarda a lista de edições.
+- O original nunca é alterado.
+- Exportar aplica tudo do zero com `node motor/editor.mjs exportar <pasta>`.
+- O formato está no topo de `motor/editor.mjs`.
+
+Ao editar `projeto.json` a pedido do usuário:
+- Os tipos são `corte` (ini, fim), `zoom` (ini, fim, escala 1.15 a 2), `texto` (ini, fim, texto curto, posicao topo|centro|baixo) e `som` (em, efeito whoosh|pop|ding|click).
+- Os tempos são do vídeo original. Use `palavras` para achar falas, palavras e pausas:
+  - "corta essa pausa" é um corte entre o fim de uma palavra e o início da próxima, deixando 0,1 s de cada lado;
+  - "tira os é…" são cortes nas palavras de hesitação;
+  - "zoom quando fala X" vai do início ao fim da palavra X, ou da frase.
+- Cada item novo leva `id` único e `nota`. Remover é tirar o item da lista.
+- Não exporte: o usuário confere na prévia.
+
 ## Vídeo gravado
 `/fabrica-conteudo:editar-video` usa a skill `ffmpeg-skill` (local, sem chave): corte de silêncio e vícios de fala, legenda palavra a palavra com transcrição local (faster-whisper) na fonte da marca (`node motor/fonte.mjs <cliente>`), volume padrão das redes, música com ducking, versões 9:16/1:1/4:5/16:9, cortes de vídeo longo, checagem por plataforma. Corrija a transcrição antes de gravar a legenda final.
 

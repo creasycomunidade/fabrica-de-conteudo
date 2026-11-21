@@ -95,6 +95,7 @@ function promptPara({ tipo, slug, pedido, anexos = [], pasta, formato, narracao 
     anuncio: `Crie um vídeo de anúncio completo (personagem, produto real, narração, legenda e cartela) seguindo o comando video-completo da fábrica: roteiro em 3 a 5 cenas, spec em saida/${slug}/specs/ e node motor/completo.mjs <spec> com timeout de 540000 ms no Bash (se estourar, rode de novo: o cache continua de onde parou). Revise os quadros e a capa antes de terminar.`,
     roteiro: `Escreva um roteiro${formato ? ` (${formato})` : ''} pronto para gravar ou animar: gancho forte nos 2 primeiros segundos (use a skill yt-script se ajudar), falas, o que aparece na tela e duração de cada parte. Salve em saida/${slug}/roteiros/${hoje()}-<nome-curto>.md.`,
     pauta: `Faça uma pauta de conteúdo seguindo o comando pauta da fábrica. Salve em saida/${slug}/pautas/${hoje()}-<tema>.md.`,
+    editor: `Edite o projeto de vídeo em ${pasta}/projeto.json (formato no topo de motor/editor.mjs e na seção "Editor de vídeo" da skill). O vídeo está parado em ${Number(formato?.tempo || 0).toFixed(2)} s${formato?.sel ? `, com o trecho de ${formato.sel[0].toFixed(2)} s a ${formato.sel[1].toFixed(2)} s selecionado` : ''}. "Aqui", "isso" e "essa parte" se referem a esse ponto ou trecho. Use "palavras" (transcrição com o tempo de cada palavra) para achar falas, palavras e pausas. Adicione, mude ou remova itens de "edicoes" conforme o pedido; cada item novo com "id" único e "nota" curta (ex.: "pausa", "zoom em grátis"). Tempos sempre do vídeo original. Música, legenda e formatos ficam nos campos "musica", "legenda" e "formatos". Não exporte nem renderize: o usuário vê a prévia na hora. Responda em uma frase o que mudou.`,
     ajuste: `Ajuste a peça existente em ${pasta} (o spec está em ${pasta}/peca.json, campo "spec"; se o campo for "anuncio", é um vídeo completo). Edite conforme o pedido, mantenha "saida": "${pasta}" e gere de novo com node motor/render.mjs (spec) ou node motor/completo.mjs (anuncio, salvo como arquivo JSON). No vídeo completo, mude só as cenas pedidas: as outras saem do cache.`,
   }[tipo];
   if (!t) throw Object.assign(new Error('tipo inválido'), { status: 400 });
@@ -377,6 +378,7 @@ rota('DELETE', '/api/peca', async req => {
 
 rota('POST', '/api/ia', async (req, b) => {
   if (b.slug) cliente(b.slug);
+  if (b.tipo === 'editor') throw Object.assign(new Error('use /api/editor/pedido'), { status: 400 });
   if (b.tipo === 'ajuste') seguro(b.pasta, 'saida');
   for (const a of b.anexos || []) seguro(a, 'clientes', 'saida');
   if (!String(b.pedido || '').trim()) throw Object.assign(new Error('Escreva o pedido'), { status: 400 });
@@ -434,6 +436,85 @@ rota('POST', '/api/videoia', async (req, b) => {
     return { pecas: [rel(dir)], resumo: 'Vídeo gerado' };
   });
   return { job: j.id };
+});
+// ---------- editor de vídeo (projeto.json + motor/editor.mjs) ----------
+const projetoDe = pasta => { const d = seguro(pasta, 'saida'); if (!fs.existsSync(path.join(d, 'projeto.json'))) throw Object.assign(new Error('projeto não encontrado'), { status: 404 }); return d; };
+rota('GET', '/api/editor/projetos', async req => {
+  const slug = new URL(req.url, 'http://x').searchParams.get('cliente'); cliente(slug);
+  const base = P('saida', slug, 'edicoes');
+  if (!fs.existsSync(base)) return [];
+  return fs.readdirSync(base).filter(n => fs.existsSync(path.join(base, n, 'projeto.json'))).map(n => {
+    const d = path.join(base, n), pj = lerJson(path.join(d, 'projeto.json'));
+    return { pasta: rel(d), nome: n, duracao: pj.duracao, edicoes: (pj.edicoes || []).length, capa: fs.existsSync(path.join(d, 'capa.jpg')) ? url(path.join(d, 'capa.jpg')) : null, video: url(path.join(d, pj.origem)), alterado: fs.statSync(path.join(d, 'projeto.json')).mtime.toISOString() };
+  }).sort((a, b) => b.alterado.localeCompare(a.alterado));
+});
+rota('POST', '/api/editor', async (req, b) => {
+  cliente(b.cliente);
+  const origem = seguro(b.arquivo, 'saida');
+  const dir = P('saida', b.cliente, 'edicoes', `${hoje()}-${slugify(b.nome || path.basename(path.dirname(origem)).replace(/^\d{4}-\d{2}-\d{2}-/, ''))}`);
+  if (fs.existsSync(path.join(dir, 'projeto.json'))) throw Object.assign(new Error('Já existe um projeto com esse nome hoje'), { status: 409 });
+  const j = novoJob(`Editor: ${path.basename(dir)}`, b.cliente);
+  executar(j, async () => {
+    await rodar(j, process.execPath, [P('motor', 'editor.mjs'), 'novo', b.cliente, origem, dir]);
+    // The upload folder only held the original, which now lives in the project.
+    if (path.basename(origem).startsWith('original.') && !fs.existsSync(path.join(path.dirname(origem), 'peca.json'))) fs.rmSync(path.dirname(origem), { recursive: true, force: true });
+    return { pasta: rel(dir), resumo: 'Projeto pronto' };
+  });
+  return { job: j.id };
+});
+rota('GET', '/api/editor', async req => {
+  const d = projetoDe(new URL(req.url, 'http://x').searchParams.get('pasta'));
+  const pj = lerJson(path.join(d, 'projeto.json'));
+  const sfx = Object.fromEntries(fs.readdirSync(path.join(d, 'sfx')).map(f => [path.parse(f).name, url(path.join(d, 'sfx', f))]));
+  return { ...pj, pasta: rel(d), videoUrl: url(path.join(d, pj.origem)), sfx, exportadoUrl: pj.exportado && fs.existsSync(path.join(d, pj.exportado)) ? url(path.join(d, pj.exportado)) : null, musicaUrl: pj.musica?.arquivo ? url(path.join(d, pj.musica.arquivo)) : null };
+});
+const EFEITOS_ED = ['whoosh', 'pop', 'ding', 'click'];
+function validarEdicoes(lista, dur) {
+  if (!Array.isArray(lista) || lista.length > 500) throw Object.assign(new Error('edições inválidas'), { status: 400 });
+  const t = x => Math.min(dur, Math.max(0, +(+x).toFixed(3)));
+  return lista.map((e, i) => {
+    const base = { id: String(e.id || `e${Date.now()}${i}`).slice(0, 40), tipo: e.tipo, nota: String(e.nota || '').slice(0, 120), ativo: e.ativo !== false };
+    if (e.tipo === 'som') { if (!EFEITOS_ED.includes(e.efeito) || !Number.isFinite(+e.em)) throw Object.assign(new Error('som inválido'), { status: 400 }); return { ...base, em: t(e.em), efeito: e.efeito }; }
+    if (!['corte', 'zoom', 'texto'].includes(e.tipo) || !Number.isFinite(+e.ini) || !Number.isFinite(+e.fim)) throw Object.assign(new Error(`edição inválida: ${e.tipo}`), { status: 400 });
+    const r = { ...base, ini: t(Math.min(e.ini, e.fim)), fim: t(Math.max(e.ini, e.fim)) };
+    if (e.tipo === 'zoom') r.escala = Math.min(2.5, Math.max(1.05, +e.escala || 1.25));
+    if (e.tipo === 'texto') { r.texto = String(e.texto || '').slice(0, 200); r.posicao = ['topo', 'centro', 'baixo'].includes(e.posicao) ? e.posicao : 'topo'; }
+    return r;
+  });
+}
+rota('PUT', '/api/editor', async (req, b) => {
+  const d = projetoDe(b.pasta);
+  const pj = lerJson(path.join(d, 'projeto.json'));
+  if (b.edicoes) pj.edicoes = validarEdicoes(b.edicoes, pj.duracao);
+  if (typeof b.legenda === 'boolean') pj.legenda = b.legenda;
+  if (Array.isArray(b.formatos)) pj.formatos = b.formatos.filter(x => ['1:1', '4:5', '16:9', '9:16'].includes(x));
+  if (b.musica === null) pj.musica = null;
+  else if (b.musica) {
+    let arquivo = pj.musica?.arquivo;
+    if (b.musica.caminho) { // new upload: copy it into the project
+      const src = seguro(b.musica.caminho, 'clientes', 'saida');
+      if (!/\.(mp3|wav|m4a)$/i.test(src)) throw Object.assign(new Error('Música deve ser MP3, WAV ou M4A'), { status: 400 });
+      arquivo = `musica${path.extname(src).toLowerCase()}`;
+      fs.copyFileSync(src, path.join(d, arquivo));
+    }
+    if (arquivo) pj.musica = { arquivo, volume: Math.min(-6, Math.max(-30, +b.musica.volume || -18)) };
+  }
+  salvarJson(path.join(d, 'projeto.json'), pj);
+  return { ok: true, musicaUrl: pj.musica ? url(path.join(d, pj.musica.arquivo)) : null };
+});
+rota('POST', '/api/editor/exportar', async (req, b) => {
+  const d = projetoDe(b.pasta);
+  const pj = lerJson(path.join(d, 'projeto.json'));
+  const j = novoJob(`Exportando ${path.basename(d)}`, pj.cliente);
+  executar(j, async () => { await rodar(j, process.execPath, [P('motor', 'editor.mjs'), 'exportar', d]); return { pecas: [rel(d)], resumo: 'Vídeo exportado' }; });
+  return { job: j.id };
+});
+rota('POST', '/api/editor/pedido', async (req, b) => {
+  const d = projetoDe(b.pasta);
+  const pj = lerJson(path.join(d, 'projeto.json'));
+  if (!String(b.pedido || '').trim()) throw Object.assign(new Error('Diga o que fazer'), { status: 400 });
+  const sel = Array.isArray(b.sel) && b.sel.length === 2 && b.sel.every(Number.isFinite) ? b.sel : null;
+  return { job: jobClaude({ tipo: 'editor', slug: pj.cliente, pasta: rel(d), pedido: String(b.pedido).slice(0, 2000), formato: { tempo: +b.tempo || 0, sel }, titulo: 'Editando com IA' }).id };
 });
 rota('GET', '/api/vozes', async () => {
   const r = spawnSync(process.execPath, [P('motor', 'voz.mjs'), 'vozes'], { cwd: ROOT, encoding: 'utf8' });

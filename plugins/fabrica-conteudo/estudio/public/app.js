@@ -6,6 +6,10 @@ const tela = $('#tela');
 
 // ---------- ícones (traço 2px, 24x24) ----------
 const P = {
+  play: 'M7 4l13 8-13 8z', pausa: 'M7 4h4v16H7zM13 4h4v16h-4z', mic: 'M12 3a3 3 0 013 3v6a3 3 0 01-6 0V6a3 3 0 013-3zM5 11a7 7 0 0014 0M12 18v3',
+  tesoura: 'M6 9a3 3 0 100-6 3 3 0 000 6zM6 21a3 3 0 100-6 3 3 0 000 6zM8.1 7.9L20 20M8.1 16.1L20 4', zoom: 'M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-5-5M11 8v6M8 11h6',
+  texto: 'M5 5h14M12 5v14M9 19h6', som: 'M4 10v4h4l5 4V6L8 10zM16 9a4 4 0 010 6M19 6a8 8 0 010 12', desfazer: 'M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3',
+  olho: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 100-6 3 3 0 000 6z', olhoX: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM4 4l16 16',
   casa: 'M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z', brilho: 'M12 3c.7 4.6 2.4 6.3 7 7-4.6.7-6.3 2.4-7 7-.7-4.6-2.4-6.3-7-7 4.6-.7 6.3-2.4 7-7zM19 3v4M17 5h4',
   grade: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z', video: 'M3 6h12v12H3zM15 10l6-3v10l-6-3', audio: 'M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4',
   doc: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5', pessoas: 'M9 11a4 4 0 100-8 4 4 0 000 8zM2 21c0-4 3-6 7-6s7 2 7 6M17 11a3 3 0 100-6M22 20c0-3-2-5-5-5',
@@ -119,7 +123,7 @@ function zonaSoltar(el, aceitar, aoEscolher, multiplo = false) {
   el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('sobre'); e.dataTransfer.files.length && aoEscolher([...e.dataTransfer.files]); });
 }
 const ehVideo = u => /\.(mp4|mov|webm|m4v)(\?|$)/i.test(u);
-const TIPOS = { post: 'Post', carrossel: 'Carrossel', story: 'Story', reel: 'Reel', 'story-video': 'Story vídeo', 'video-editado': 'Vídeo editado', 'video-ia': 'Vídeo IA' };
+const TIPOS = { post: 'Post', carrossel: 'Carrossel', story: 'Story', reel: 'Reel', 'story-video': 'Story vídeo', 'video-editado': 'Vídeo editado', 'video-ia': 'Vídeo IA', edicao: 'Edição' };
 function cardPeca(p) {
   const midia = ehVideo(p.capa) ? `<video src="${esc(p.capa)}#t=0.5" muted preload="metadata"></video>` : `<img src="${esc(p.capa)}" loading="lazy" alt="">`;
   return `<a class="peca" href="#/peca?pasta=${encodeURIComponent(p.pasta)}"><div class="thumb">${midia}<span class="selo">${esc(TIPOS[p.tipo] || p.tipo)}</span></div><div class="info"><b>${esc(p.nome.replace(/^\d{4}-\d{2}-\d{2}-/, ''))}</b><span>${quando(p.alterado)}${p.arquivos.length > 1 ? ` · ${p.arquivos.length} arquivos` : ''}</span></div></a>`;
@@ -285,7 +289,7 @@ async function telaPeca(q) {
   const palco = () => { const u = pc.arquivosUrl[atual]; return ehVideo(u) ? `<video src="${esc(u)}" controls playsinline></video>` : `<img src="${esc(u)}?v=${Date.now()}" alt="">`; };
   const desenhar = () => {
     tela.innerHTML = `<div class="cab"><div><a class="sub" href="#/pecas">${ico('voltar')} Peças</a><h1 style="margin-top:6px">${esc(pc.pasta.split('/').pop().replace(/^\d{4}-\d{2}-\d{2}-/, ''))}</h1><p class="sub">${esc(TIPOS[pc.tipo] || pc.tipo)} · ${esc(dados.nome || pc.cliente)}${pc.avisos?.length ? ` · <span class="tag falta">${pc.avisos.length} aviso(s)</span>` : ''}</p></div>
-      <button class="btn perigo" id="excluir">${ico('lixo')}Excluir</button></div>
+      ${pc.tipo === 'edicao' ? `<a class="btn" href="#/editor?pasta=${encodeURIComponent(pc.pasta)}">${ico('tesoura')}Abrir no editor</a>` : ''}<button class="btn perigo" id="excluir">${ico('lixo')}Excluir</button></div>
     <div class="editor"><div class="palco"><div class="tela-peca" id="palco">${palco()}</div>
       ${pc.arquivosUrl.length > 1 ? `<div class="miniaturas">${pc.arquivosUrl.map((u, i) => ehVideo(u) ? `<span class="chip ${i === atual ? 'on' : ''}" data-m="${i}">${ico('video')} ${esc(pc.arquivos[i])}</span>` : `<img src="${esc(u)}?v=${Date.now()}" data-m="${i}" class="${i === atual ? 'on' : ''}" alt="Slide ${i + 1}">`).join('')}</div>` : ''}
       ${pc.avisos?.length ? `<div class="nota">${pc.avisos.map(esc).join('<br>')}</div>` : ''}</div>
@@ -422,6 +426,317 @@ async function telaVideoIA() {
   };
   const ps = (await api(`/api/pecas?cliente=${S.cliente}`)).filter(p => p.tipo === 'video-ia');
   $('#lista').innerHTML = ps.length ? ps.map(cardPeca).join('') : `<div class="card vazio" style="grid-column:1/-1">Nenhum vídeo gerado ainda.</div>`;
+}
+
+// ---- editor de vídeo: linha do tempo, prévia ao vivo e pedidos por texto ou voz ----
+const ROTULO_ED = { corte: 'Corte', zoom: 'Zoom', texto: 'Texto', som: 'Som' };
+const fmtT = s => { s = Math.max(0, s || 0); return `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`; };
+// Same rules as motor/editor.mjs, so the preview matches the export.
+function cortesEd(eds) {
+  const cs = eds.filter(e => e.tipo === 'corte' && e.ativo !== false && e.fim > e.ini).map(e => [e.ini, e.fim]).sort((a, b) => a[0] - b[0]);
+  const out = [];
+  for (const c of cs) { const u = out.at(-1); if (u && c[0] <= u[1]) u[1] = Math.max(u[1], c[1]); else out.push([...c]); }
+  return out;
+}
+function remapEd(t, cs) { let m = 0; for (const [a, b] of cs) { if (t >= b) m += b - a; else if (t > a) return null; } return t - m; }
+function gruposFala(ps) {
+  const gs = []; let g = [];
+  for (const w of ps) { g.push(w); if (g.length >= 3 || /[.!?,:;]$/.test(w.t)) { gs.push(g); g = []; } }
+  if (g.length) gs.push(g);
+  return gs.map((ws, i) => ({ ini: ws[0].ini, fim: gs[i + 1]?.[0].ini ?? ws.at(-1).fim + 0.25, ws }));
+}
+function pausasEd(ps, dur, min = 0.6) {
+  const out = []; let ant = 0;
+  for (const w of [...ps, { ini: dur, fim: dur }]) {
+    if (w.ini - ant > min) out.push({ tipo: 'corte', ini: +(ant + (ant ? 0.15 : 0)).toFixed(2), fim: +(w.ini - 0.12).toFixed(2), nota: 'pausa' });
+    ant = Math.max(ant, w.fim);
+  }
+  return out.filter(c => c.fim - c.ini > 0.2);
+}
+const novoId = () => `e${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+
+async function telaEditorLista() {
+  tela.innerHTML = `<div class="cab"><div><h1>Editor de vídeo</h1><p class="sub">Mande o vídeo gravado. A fábrica transcreve cada palavra e você edita na linha do tempo, clicando ou pedindo por texto e voz: "corta essa pausa", "zoom aqui", "coloca um whoosh".</p></div></div>
+    <div class="soltar" id="zona">${ico('upload')}<div><b>Arraste o vídeo aqui</b> ou clique para escolher (MP4 ou MOV)</div></div>
+    <div class="cab" style="margin:30px 0 14px"><h2>Projetos</h2></div><div class="grade auto" id="lista"><div class="sub">Carregando…</div></div>`;
+  pintarIcones(tela);
+  zonaSoltar($('#zona'), 'video/*', async ([f]) => {
+    try {
+      aviso(`Enviando ${f.name}…`);
+      const up = await enviar(f, S.cliente, 'video');
+      const { job } = await api('/api/editor', { body: { cliente: S.cliente, arquivo: up.caminho, nome: f.name.replace(/\.[^.]+$/, '') } });
+      acompanhar(job, { titulo: 'Preparando o vídeo (transcrição no seu computador)', aoTerminar: j => { if (j.status === 'ok') location.hash = `#/editor?pasta=${encodeURIComponent(j.resultado.pasta)}`; } });
+    } catch (e) { falhou(e); }
+  });
+  const ps = await api(`/api/editor/projetos?cliente=${S.cliente}`);
+  $('#lista').innerHTML = ps.length ? ps.map(p => `<a class="peca" href="#/editor?pasta=${encodeURIComponent(p.pasta)}"><div class="thumb">${p.capa ? `<img src="${esc(p.capa)}" alt="">` : `<video src="${esc(p.video)}#t=0.5" muted preload="metadata"></video>`}<span class="selo">Edição</span></div><div class="info"><b>${esc(p.nome.replace(/^\d{4}-\d{2}-\d{2}-/, ''))}</b><span>${fmtT(p.duracao)} · ${p.edicoes} edição(ões) · ${quando(p.alterado)}</span></div></a>`).join('')
+    : `<div class="card vazio" style="grid-column:1/-1">Nenhum projeto ainda.</div>`;
+}
+
+async function telaEditor(q) {
+  if (!cli()) return (tela.innerHTML = semCliente());
+  const pasta = q.get('pasta');
+  if (!pasta) return telaEditorLista();
+  let pj = await api(`/api/editor?pasta=${encodeURIComponent(pasta)}`);
+  const marca = S.clientes.find(c => c.slug === pj.cliente) || cli();
+  const cores = { primaria: '#6C2BD9', secundaria: '#FFD400', ...(marca.cores || {}) };
+  let eds = pj.edicoes || [];
+  const hist = [];
+  let sel = null, escolhido = null, tAnt = 0, pxs = 80;
+  const grupos = gruposFala(pj.palavras || []);
+  const dur = pj.duracao;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  tela.innerHTML = `<div class="cab"><div><a class="sub" href="#/editor">${ico('voltar')} Editor</a><h1 style="margin-top:6px">${esc(pasta.split('/').pop().replace(/^\d{4}-\d{2}-\d{2}-/, ''))}</h1><p class="sub">${fmtT(dur)} · ${(pj.palavras || []).length} palavras transcritas · espaço = play/pausa · Ctrl+Z = desfazer</p></div>
+      <div class="linha"><button class="btn ghost" id="desfazer">${ico('desfazer')}Desfazer</button><button class="btn" id="exportar">${ico('baixar')}Exportar vídeo</button></div></div>
+    <div class="ed">
+      <div class="ed-palco"><div class="ed-quadro" style="aspect-ratio:${pj.largura}/${pj.altura}"><div class="ed-zoom" id="zoomEl"><video id="v" src="${esc(pj.videoUrl)}" preload="auto" playsinline></video></div>
+          <div class="ed-txt" id="txt" hidden></div><div class="ed-leg" id="leg" hidden></div></div>
+        <div class="ed-ctl"><button class="icobtn ed-play" id="play" title="Play/pausa">${ico('play')}</button><b id="tempo">0:00.0</b><span class="sub" id="saida"></span></div></div>
+      <div class="ed-lado">
+        <div class="card form ed-pedir"><div class="linha" style="justify-content:space-between"><b>O que fazer aqui?</b><span class="sub" id="onde"></span></div>
+          <div class="ed-input"><textarea class="inp" id="pedido" rows="3" placeholder="Ex.: corta essa pausa · zoom quando ela fala grátis · whoosh aqui · texto &quot;Frete grátis&quot; nessa parte · tira todos os &quot;é…&quot;"></textarea>${SR ? `<button class="icobtn ed-mic" id="mic" title="Falar o pedido">${ico('mic')}</button>` : ''}</div>
+          <div class="linha" style="justify-content:space-between"><span class="sub" id="iaStatus">A IA vê o ponto onde o vídeo está e o trecho selecionado.</span><button class="btn" id="aplicar">${ico('brilho')}Aplicar com IA</button></div></div>
+        <div class="ed-ferr">
+          <button class="btn ghost peq" data-f="pausas">${ico('tesoura')}Cortar pausas</button>
+          <button class="btn ghost peq" data-f="corte">${ico('tesoura')}Cortar seleção</button>
+          <button class="btn ghost peq" data-f="zoom">${ico('zoom')}Zoom</button>
+          <button class="btn ghost peq" data-f="texto">${ico('texto')}Texto</button>
+          <span class="ed-som"><select class="inp peq" id="efeito">${['whoosh', 'pop', 'ding', 'click'].map(e => `<option>${e}</option>`).join('')}</select><button class="btn ghost peq" data-f="som">${ico('som')}Som aqui</button></span>
+        </div>
+        <div class="ed-lista" id="lista"></div>
+        <details class="card ed-saida"><summary><b>Legenda, música e formatos</b></summary><div class="form" style="margin-top:12px" id="ajustesEd"></div></details>
+      </div>
+    </div>
+    <div class="ed-tl"><div class="ed-rot"><span>Tempo</span><span>Fala</span><span>Cortes</span><span>Zoom</span><span>Texto</span><span>Som</span></div><div class="ed-tl-sc" id="sc"><div class="ed-tl-in" id="tlin"></div></div></div>`;
+  pintarIcones(tela);
+  const v = $('#v'), tlin = $('#tlin'), sc = $('#sc');
+  const sons = Object.fromEntries(Object.entries(pj.sfx || {}).map(([k, u]) => [k, new Audio(u)]));
+  let musica = pj.musicaUrl ? Object.assign(new Audio(pj.musicaUrl), { loop: true, volume: 0.25 }) : null;
+
+  let tSalvar;
+  const salvar = corpo => { clearTimeout(tSalvar); tSalvar = setTimeout(() => api('/api/editor', { method: 'PUT', body: { pasta, ...(corpo || { edicoes: eds }) } }).catch(falhou), corpo ? 0 : 350); };
+  const mudar = fn => { hist.push(JSON.stringify(eds)); fn(); salvar(); desenhar(); };
+  const desfazer = () => { if (!hist.length) return aviso('Nada para desfazer'); eds = JSON.parse(hist.pop()); salvar(); desenhar(); aviso('Desfeito'); };
+  const ir = t => { v.currentTime = Math.min(dur - 0.01, Math.max(0, t)); };
+
+  function desenhar() { desenharTL(); desenharLista(); }
+  function desenharTL() {
+    pxs = Math.max((sc.clientWidth - 20) / dur, 40);
+    const X = t => `${(t * pxs).toFixed(1)}px`;
+    const W = (a, b) => `${Math.max(3, (b - a) * pxs).toFixed(1)}px`;
+    const passo = pxs > 60 ? 1 : pxs > 25 ? 2 : 5;
+    let regua = '';
+    for (let s = 0; s <= dur; s += passo) regua += `<span class="ed-tick" style="left:${X(s)}">${fmtT(s).replace(/\.\d$/, '')}</span>`;
+    const ativos = eds.filter(e => e.ativo !== false);
+    const blocos = tipo => ativos.filter(e => e.tipo === tipo).map(e => `<div class="ed-b ${tipo} ${e.id === escolhido ? 'on' : ''}" data-id="${esc(e.id)}" style="left:${X(e.ini)};width:${W(e.ini, e.fim)}" title="${esc(e.nota || e.texto || '')}">${esc(tipo === 'texto' ? e.texto : tipo === 'zoom' ? `${e.escala}x` : e.nota || '')}</div>`).join('');
+    const cs = cortesEd(eds);
+    tlin.style.width = `${dur * pxs + 20}px`;
+    tlin.innerHTML = `<div class="ed-tr regua">${regua}</div>
+      <div class="ed-tr fala">${(pj.palavras || []).map((w, i) => `<span class="ed-w ${remapEd((w.ini + w.fim) / 2, cs) == null ? 'cortada' : ''}" data-w="${i}" style="left:${X(w.ini)};width:${W(w.ini, w.fim)}">${esc(w.t)}</span>`).join('')}</div>
+      <div class="ed-tr">${blocos('corte')}</div><div class="ed-tr">${blocos('zoom')}</div><div class="ed-tr">${blocos('texto')}</div>
+      <div class="ed-tr">${ativos.filter(e => e.tipo === 'som').map(e => `<div class="ed-b som ${e.id === escolhido ? 'on' : ''}" data-id="${esc(e.id)}" style="left:${X(e.em)}">${esc(e.efeito)}</div>`).join('')}</div>
+      <div class="ed-sel" id="selEl" ${sel ? '' : 'hidden'} style="${sel ? `left:${X(sel[0])};width:${W(sel[0], sel[1])}` : ''}"></div><div class="ed-ph" id="ph"></div>`;
+  }
+  function desenharLista() {
+    const ord = [...eds].sort((a, b) => (a.ini ?? a.em) - (b.ini ?? b.em));
+    $('#lista').innerHTML = ord.length ? ord.map(e => {
+      const quando = e.tipo === 'som' ? fmtT(e.em) : `${fmtT(e.ini)} – ${fmtT(e.fim)}`;
+      const det = e.id !== escolhido ? '' : `<div class="ed-det" data-det="${esc(e.id)}">
+        ${e.tipo === 'som' ? `<label>Em (s)<input class="inp peq" type="number" step="0.05" data-k="em" value="${e.em}"></label><label>Efeito<select class="inp peq" data-k="efeito">${['whoosh', 'pop', 'ding', 'click'].map(x => `<option ${x === e.efeito ? 'selected' : ''}>${x}</option>`).join('')}</select></label>`
+          : `<label>Início<input class="inp peq" type="number" step="0.05" data-k="ini" value="${e.ini}"></label><label>Fim<input class="inp peq" type="number" step="0.05" data-k="fim" value="${e.fim}"></label>`}
+        ${e.tipo === 'zoom' ? `<label>Escala<select class="inp peq" data-k="escala">${[1.15, 1.25, 1.4, 1.6, 2].map(x => `<option ${x === e.escala ? 'selected' : ''}>${x}</option>`).join('')}</select></label>` : ''}
+        ${e.tipo === 'texto' ? `<label style="flex:1 1 100%">Texto<input class="inp peq" data-k="texto" value="${esc(e.texto)}"></label><label>Posição<select class="inp peq" data-k="posicao">${['topo', 'centro', 'baixo'].map(x => `<option ${x === e.posicao ? 'selected' : ''}>${x}</option>`).join('')}</select></label>` : ''}</div>`;
+      return `<div class="ed-item ${e.ativo === false ? 'off' : ''} ${e.id === escolhido ? 'on' : ''}" data-id="${esc(e.id)}"><span class="ed-tag ${e.tipo}">${ROTULO_ED[e.tipo]}</span><span class="grow"><b>${quando}</b> <span class="sub">${esc(e.tipo === 'texto' ? `"${e.texto}"` : e.tipo === 'som' ? e.efeito : e.tipo === 'zoom' ? `${e.escala}x` : '')} ${esc(e.nota || '')}</span></span>
+        <button class="icobtn" data-liga="${esc(e.id)}" title="${e.ativo === false ? 'Ligar' : 'Desligar'}">${ico(e.ativo === false ? 'olhoX' : 'olho')}</button><button class="icobtn" data-rm="${esc(e.id)}" title="Remover">${ico('x')}</button>${det}</div>`;
+    }).join('') : `<div class="sub" style="padding:10px 4px">Nenhuma edição ainda. Selecione um trecho arrastando na linha do tempo, clique numa palavra ou peça para a IA.</div>`;
+    pintarIcones($('#lista'));
+  }
+
+  // ---- timeline mouse: click seeks, drag selects, click a word or block selects it ----
+  let arrasto = null;
+  const tDe = ev => (ev.clientX - tlin.getBoundingClientRect().left) / pxs;
+  tlin.addEventListener('mousedown', ev => {
+    const w = ev.target.closest('[data-w]'), b = ev.target.closest('[data-id]');
+    if (w) { const p = pj.palavras[+w.dataset.w]; sel = ev.shiftKey && sel ? [Math.min(sel[0], p.ini), Math.max(sel[1], p.fim)] : [p.ini, p.fim]; ir(p.ini); escolhido = null; return desenhar(); }
+    if (b) { const e = eds.find(x => x.id === b.dataset.id); escolhido = e.id; sel = e.tipo === 'som' ? null : [e.ini, e.fim]; ir(e.ini ?? e.em); return desenhar(); }
+    arrasto = { x: ev.clientX, t0: tDe(ev) };
+  });
+  window.addEventListener('mousemove', ev => {
+    if (!arrasto || Math.abs(ev.clientX - arrasto.x) < 5) return;
+    const t = Math.min(dur, Math.max(0, tDe(ev)));
+    sel = [Math.min(arrasto.t0, t), Math.max(arrasto.t0, t)];
+    const s = $('#selEl'); if (s) { s.hidden = false; s.style.left = `${sel[0] * pxs}px`; s.style.width = `${(sel[1] - sel[0]) * pxs}px`; }
+  });
+  window.addEventListener('mouseup', ev => {
+    if (!arrasto) return;
+    if (Math.abs(ev.clientX - arrasto.x) < 5) { sel = null; escolhido = null; ir(arrasto.t0); desenhar(); } else ir(sel[0]);
+    arrasto = null;
+  });
+
+  // ---- list: toggle, remove, inline edit ----
+  $('#lista').addEventListener('click', ev => {
+    const liga = ev.target.closest('[data-liga]'), rm = ev.target.closest('[data-rm]');
+    if (liga) return mudar(() => { const e = eds.find(x => x.id === liga.dataset.liga); e.ativo = e.ativo === false; });
+    if (rm) return mudar(() => { eds = eds.filter(x => x.id !== rm.dataset.rm); });
+    if (ev.target.closest('.ed-det')) return;
+    const it = ev.target.closest('.ed-item');
+    if (it) { const e = eds.find(x => x.id === it.dataset.id); escolhido = escolhido === e.id ? null : e.id; sel = e.tipo === 'som' ? null : [e.ini, e.fim]; ir(e.ini ?? e.em); desenhar(); }
+  });
+  $('#lista').addEventListener('change', ev => {
+    const k = ev.target.dataset.k, d = ev.target.closest('[data-det]');
+    if (!k || !d) return;
+    mudar(() => { const e = eds.find(x => x.id === d.dataset.det); e[k] = ['texto', 'posicao', 'efeito'].includes(k) ? ev.target.value : +ev.target.value; });
+  });
+
+  // ---- quick tools ----
+  $('.ed-ferr').addEventListener('click', ev => {
+    const f = ev.target.closest('[data-f]')?.dataset.f; if (!f) return;
+    const t = v.currentTime;
+    if (f === 'pausas') {
+      const cs = cortesEd(eds);
+      const novas = pausasEd(pj.palavras || [], dur).filter(p => !cs.some(([a, b]) => p.ini < b && p.fim > a));
+      if (!novas.length) return aviso('Nenhuma pausa longa encontrada');
+      mudar(() => eds.push(...novas.map(p => ({ ...p, id: novoId() }))));
+      return aviso(`${novas.length} pausa(s) cortada(s). Ctrl+Z desfaz.`);
+    }
+    if (f === 'corte') { if (!sel) return aviso('Arraste na linha do tempo (ou clique numa palavra) para escolher o trecho', true); return mudar(() => eds.push({ id: novoId(), tipo: 'corte', ini: +sel[0].toFixed(2), fim: +sel[1].toFixed(2), nota: 'manual' })); }
+    const [a, b] = sel || [t, Math.min(dur, t + 2)];
+    if (f === 'zoom') return mudar(() => { const id = novoId(); eds.push({ id, tipo: 'zoom', ini: +a.toFixed(2), fim: +b.toFixed(2), escala: 1.25, nota: '' }); escolhido = id; });
+    if (f === 'texto') {
+      const texto = prompt('Texto que aparece na tela:'); if (!texto?.trim()) return;
+      return mudar(() => { const id = novoId(); eds.push({ id, tipo: 'texto', ini: +a.toFixed(2), fim: +b.toFixed(2), texto: texto.trim(), posicao: 'topo', nota: '' }); escolhido = id; });
+    }
+    if (f === 'som') { const efeito = $('#efeito').value; sons[efeito]?.play(); return mudar(() => eds.push({ id: novoId(), tipo: 'som', em: +t.toFixed(2), efeito, nota: '' })); }
+  });
+  $('#desfazer').onclick = desfazer;
+
+  // ---- IA: the request goes to Claude with the playhead and selection; the result reloads the edit list ----
+  async function aplicar() {
+    const pedido = $('#pedido').value.trim();
+    if (!pedido) return aviso('Escreva ou fale o que fazer', true);
+    v.pause();
+    const btn = $('#aplicar'); btn.disabled = true;
+    const st = $('#iaStatus');
+    try {
+      const { job } = await api('/api/editor/pedido', { body: { pasta, pedido, tempo: v.currentTime, sel } });
+      st.textContent = 'A IA está editando…';
+      for (;;) {
+        await new Promise(r => setTimeout(r, 1500));
+        if (!document.body.contains(st)) return;
+        const j = await api(`/api/jobs/${job}`);
+        const ult = j.log.map(amigavel).filter(Boolean).at(-1);
+        if (j.status === 'rodando') { if (ult) st.textContent = `IA: ${ult.slice(0, 90)}`; continue; }
+        if (j.status !== 'ok') { st.textContent = `Não concluiu: ${j.erro || ''}`; break; }
+        const novo = await api(`/api/editor?pasta=${encodeURIComponent(pasta)}`);
+        hist.push(JSON.stringify(eds));
+        eds = novo.edicoes || []; pj = { ...pj, legenda: novo.legenda, formatos: novo.formatos, musica: novo.musica };
+        st.textContent = `Pronto. ${j.resultado?.resumo || ''} (Ctrl+Z desfaz)`;
+        $('#pedido').value = '';
+        desenhar(); ajustes();
+        break;
+      }
+    } catch (e) { falhou(e); st.textContent = ''; }
+    btn.disabled = false;
+  }
+  $('#aplicar').onclick = aplicar;
+  $('#pedido').addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); aplicar(); } });
+  if (SR) {
+    let rec = null;
+    $('#mic').onclick = () => {
+      if (rec) return rec.stop();
+      v.pause();
+      rec = Object.assign(new SR(), { lang: 'pt-BR', interimResults: true, continuous: false });
+      const ta = $('#pedido'), base = ta.value ? `${ta.value} ` : '';
+      let final = '';
+      rec.onresult = ev => { final = [...ev.results].map(r => r[0].transcript).join(' '); ta.value = base + final; };
+      rec.onend = () => { $('#mic').classList.remove('on'); rec = null; if (final.trim()) aplicar(); };
+      rec.onerror = ev => aviso(ev.error === 'not-allowed' ? 'Permita o microfone no navegador' : `Microfone: ${ev.error}`, true);
+      $('#mic').classList.add('on');
+      rec.start();
+    };
+  }
+
+  // ---- export settings ----
+  function ajustes() {
+    const el = $('#ajustesEd');
+    el.innerHTML = `<label class="chip ${pj.legenda ? 'on' : ''}"><input type="checkbox" id="optLeg" ${pj.legenda ? 'checked' : ''} ${(pj.palavras || []).length ? '' : 'disabled'}> Legenda palavra a palavra na fonte da marca</label>
+      <div><b style="font-size:13px">Música de fundo</b> <small class="sub">(abaixa sozinha quando alguém fala)</small>
+        <div class="linha" style="margin-top:8px">${pj.musica ? `<span class="chip on">${ico('audio')} ${esc(pj.musica.arquivo)}</span><label class="sub">Volume <input type="range" min="-30" max="-8" value="${pj.musica.volume}" id="volMus"></label><button class="btn ghost peq" id="tirarMus">Remover</button>` : `<button class="btn ghost peq" id="porMus">${ico('upload')}Escolher música</button>`}</div></div>
+      <div><b style="font-size:13px">Versões extras</b><div class="chips" style="margin-top:8px">${['1:1', '4:5', '16:9'].map(a => `<label class="chip ${(pj.formatos || []).includes(a) ? 'on' : ''}"><input type="checkbox" data-fmt="${a}" ${(pj.formatos || []).includes(a) ? 'checked' : ''}> ${a}</label>`).join('')}</div></div>
+      ${pj.exportadoUrl ? `<a class="btn ghost peq" href="${esc(pj.exportadoUrl)}" target="_blank" rel="noopener">${ico('video')}Ver último vídeo exportado</a>` : ''}`;
+    pintarIcones(el);
+    $('#optLeg', el).onchange = e => { pj.legenda = e.target.checked; e.target.parentElement.classList.toggle('on', pj.legenda); salvar({ legenda: pj.legenda }); };
+    $$('[data-fmt]', el).forEach(i => (i.onchange = () => { pj.formatos = $$('[data-fmt]:checked', el).map(x => x.dataset.fmt); i.parentElement.classList.toggle('on', i.checked); salvar({ formatos: pj.formatos }); }));
+    $('#volMus', el)?.addEventListener('change', e => { pj.musica.volume = +e.target.value; if (musica) musica.volume = Math.min(1, 0.25 * 10 ** ((pj.musica.volume + 18) / 20)); salvar({ musica: { volume: pj.musica.volume } }); });
+    $('#tirarMus', el)?.addEventListener('click', () => { pj.musica = null; musica?.pause(); musica = null; salvar({ musica: null }); ajustes(); });
+    $('#porMus', el)?.addEventListener('click', () => {
+      const inp = Object.assign(document.createElement('input'), { type: 'file', accept: 'audio/*' });
+      inp.onchange = async () => {
+        try {
+          const up = await enviar(inp.files[0], pj.cliente, 'anexo');
+          const r = await api('/api/editor', { method: 'PUT', body: { pasta, musica: { caminho: up.caminho, volume: -18 } } });
+          pj.musica = { arquivo: r.musicaUrl.split('/').pop(), volume: -18 };
+          musica = Object.assign(new Audio(r.musicaUrl), { loop: true, volume: 0.25 });
+          ajustes();
+        } catch (e) { falhou(e); }
+      };
+      inp.click();
+    });
+  }
+  ajustes();
+  $('#exportar').onclick = async () => {
+    v.pause();
+    try { const { job } = await api('/api/editor/exportar', { body: { pasta } }); acompanhar(job, { titulo: 'Exportando o vídeo', aoTerminar: async j => { if (j.status === 'ok') { pj = await api(`/api/editor?pasta=${encodeURIComponent(pasta)}`); ajustes(); } } }); } catch (e) { falhou(e); }
+  };
+
+  // ---- playback + live preview of cuts, zoom, text, captions and sounds ----
+  const tocar = () => (v.paused ? v.play() : v.pause());
+  $('#play').onclick = tocar;
+  v.onclick = tocar;
+  v.onplay = () => { $('#play').innerHTML = ico('pausa'); if (musica) { const o = remapEd(v.currentTime, cortesEd(eds)); musica.currentTime = (o || 0) % (musica.duration || 1e9); musica.play().catch(() => {}); } };
+  v.onpause = () => { $('#play').innerHTML = ico('play'); musica?.pause(); };
+  const tecla = ev => {
+    if (!document.body.contains(v)) return window.removeEventListener('keydown', tecla);
+    if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) return;
+    if (ev.code === 'Space') { ev.preventDefault(); tocar(); }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); desfazer(); }
+    if (ev.key === 'Delete' && escolhido) mudar(() => { eds = eds.filter(x => x.id !== escolhido); escolhido = null; });
+  };
+  window.addEventListener('keydown', tecla);
+  window.addEventListener('resize', () => document.body.contains(v) && desenharTL());
+
+  const txt = $('#txt'), leg = $('#leg'), zoomEl = $('#zoomEl');
+  txt.style.background = cores.primaria;
+  (function quadro() {
+    if (!document.body.contains(v)) { musica?.pause(); return; }
+    let t = v.currentTime;
+    const cs = cortesEd(eds);
+    if (!v.paused) {
+      const c = cs.find(([a, b]) => t >= a && t < b - 0.03);
+      if (c) { v.currentTime = Math.min(dur, c[1] + 0.01); t = c[1]; }
+      for (const e of eds) if (e.tipo === 'som' && e.ativo !== false && tAnt < e.em && t >= e.em && t - tAnt < 0.5) { const a = sons[e.efeito]; if (a) { a.currentTime = 0; a.play().catch(() => {}); } }
+    }
+    tAnt = t;
+    const ativos = eds.filter(e => e.ativo !== false);
+    const z = 1 + ativos.filter(e => e.tipo === 'zoom' && t >= e.ini && t <= e.fim).reduce((s, e) => s + (e.escala - 1) * Math.min(1, (t - e.ini) / 0.25), 0);
+    zoomEl.style.transform = `scale(${z})`;
+    const tx = ativos.find(e => e.tipo === 'texto' && t >= e.ini && t <= e.fim);
+    txt.hidden = !tx;
+    if (tx && txt.textContent !== tx.texto) txt.textContent = tx.texto;
+    if (tx) txt.className = `ed-txt ${tx.posicao}`;
+    const g = pj.legenda && grupos.find(x => t >= x.ini && t < x.fim);
+    leg.hidden = !g;
+    if (g) leg.innerHTML = g.ws.filter(w => remapEd((w.ini + w.fim) / 2, cs) != null).map(w => `<span style="${t >= w.ini && t < w.fim + 0.05 ? `color:${cores.secundaria};transform:scale(1.12)` : ''}">${esc(w.t)}</span>`).join(' ');
+    const ph = $('#ph'); if (ph) ph.style.left = `${t * pxs}px`;
+    if (!v.paused && ph && (t * pxs > sc.scrollLeft + sc.clientWidth - 40 || t * pxs < sc.scrollLeft)) sc.scrollLeft = t * pxs - 60;
+    $('#tempo').textContent = fmtT(t);
+    const o = remapEd(t, cs);
+    $('#saida').textContent = o == null ? 'trecho cortado' : `no vídeo final: ${fmtT(o)} de ${fmtT(dur - cs.reduce((s, [a, b]) => s + b - a, 0))}`;
+    $('#onde').textContent = sel ? `trecho ${fmtT(sel[0])} – ${fmtT(sel[1])}` : `no ponto ${fmtT(t)}`;
+    requestAnimationFrame(quadro);
+  })();
+  desenhar();
 }
 
 // ---- áudios ----
@@ -635,6 +950,7 @@ async function render() {
     else if (r === 'peca') await telaPeca(q);
     else if (r === 'videos') await telaVideos();
     else if (r === 'videoia') await telaVideoIA();
+    else if (r === 'editor') await telaEditor(q);
     else if (r === 'audios') await telaAudios();
     else if (r === 'roteiros') await telaRoteiros(q);
     else if (r === 'clientes' && partes[1]) await telaCliente(partes[1], q);
