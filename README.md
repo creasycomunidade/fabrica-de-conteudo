@@ -20,6 +20,11 @@ O próprio setup faz a **análise de requisitos** (`plugins/fabrica-conteudo/ins
 | Chave (no `.env`) | Serviço | Para quê |
 |---|---|---|
 | `FAL_KEY` | [fal.ai](https://fal.ai) | Ilustrações e mascotes (Nano Banana), fundos de cenário, clipes de vídeo com IA |
+| `RUNWAYML_API_SECRET` | [Runway](https://dev.runwayml.com) | Vídeo com IA: Veo 3.1, Kling 4, Hailuo 3, Seedance 2.5, Gen-4.5 (uma chave para todos) |
+| `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey) | Vídeo com Gemini Omni Flash (o Veo 3.1 saiu da Gemini API em out/2026; use via Runway) |
+| `MINIMAX_API_KEY` | [MiniMax](https://platform.minimax.io) | Vídeo com Hailuo H3 |
+| `HEYGEN_API_KEY` | [HeyGen](https://app.heygen.com) | Vídeo com apresentador (Video Agent) |
+| `HIGGSFIELD_KEY` + `HIGGSFIELD_APP` | [Higgsfield Cloud](https://cloud.higgsfield.ai) | Vídeo com o modelo escolhido no catálogo deles |
 | `ELEVENLABS_API_KEY` | [ElevenLabs](https://elevenlabs.io) | **Narração** dos reels com legenda sincronizada |
 | `METRICOOL_TOKEN`, `METRICOOL_USER_ID`, `METRICOOL_BLOG_ID` | [Metricool](https://metricool.com) (plano com API) | **Agendar em todas as redes** sem deixar o computador ligado |
 | `META_PAGE_ID`, `META_PAGE_TOKEN`, `IG_USER_ID` | App da Meta | Publicação direta no Instagram/Facebook (alternativa ao Metricool) |
@@ -84,7 +89,7 @@ Também dá para pedir em linguagem natural ("cria um carrossel com 3 dicas para
 - **Instagram**: imagens precisam de URL pública; o motor sobe a imagem como foto não publicada da página do Facebook e usa esse endereço. Vídeos vão por upload direto.
 
 ## Ainda não testado com contas reais
-Publicação no Instagram/Facebook, Metricool, ElevenLabs, as chamadas à fal.ai (ilustração, fundo, clipe) e o agendador do Windows foram escritos conforme a documentação oficial de cada API, mas só o caminho sem credenciais foi exercitado (a narração e a legenda foram testadas com áudio e transcrição simulados). Faça o primeiro uso com uma página/conta de teste.
+Publicação no Instagram/Facebook, Metricool, ElevenLabs, as chamadas à fal.ai (ilustração, fundo, clipe) as APIs de vídeo com IA (Runway, Google, MiniMax, Higgsfield, HeyGen) e o agendador do Windows foram escritos conforme a documentação oficial de cada API, mas só o caminho sem credenciais foi exercitado (a narração e a legenda foram testadas com áudio e transcrição simulados). Faça o primeiro uso com uma página/conta de teste.
 
 ## Estrutura
 ```
@@ -95,7 +100,7 @@ plugins/fabrica-conteudo/
   skills/          regras da fábrica (formato de marca.json e dos specs)
   agents/          6 agentes de marketing (agency-agents, MIT)
   estudio/         servidor.mjs + public/ (interface no navegador) e atalhos Abrir Estudio
-  motor/           render.mjs, templates.mjs, revisao.mjs, imagem.mjs, fonte.mjs, voz.mjs, metricool.mjs, publicar.mjs, ia.mjs, teste.mjs, demo/
+  motor/           render.mjs, templates.mjs, revisao.mjs, imagem.mjs, fonte.mjs, voz.mjs, metricool.mjs, publicar.mjs, ia.mjs, videoia.mjs, teste.mjs, demo/
 ```
 
 ## Licença e créditos

@@ -47,6 +47,11 @@ Carregadas do [Google Fonts](https://fonts.google.com) no momento do uso (não i
 | [Anthropic Claude](https://www.anthropic.com) / Claude Code | IA que cria e revisa as peças |
 | [ElevenLabs](https://elevenlabs.io) | Narração |
 | [fal.ai](https://fal.ai), com modelos Nano Banana Pro (Google) e Kling (Kuaishou) | Ilustrações, fundos e clipes com IA |
+| [Runway](https://runwayml.com), com modelos Veo 3.1 (Google), Kling (Kuaishou), Hailuo (MiniMax), Seedance (ByteDance) e Gen-4.5 | Vídeo com IA |
+| [Google Gemini API](https://ai.google.dev) (Gemini Omni Flash) | Vídeo com IA |
+| [MiniMax](https://www.minimax.io) (Hailuo H3) | Vídeo com IA |
+| [Higgsfield](https://higgsfield.ai) | Vídeo com IA |
+| [HeyGen](https://www.heygen.com) | Vídeo com apresentador |
 | [Metricool](https://metricool.com) | Agendamento em várias redes |
 | [Meta Graph API](https://developers.facebook.com) | Publicação direta no Instagram e Facebook |
 

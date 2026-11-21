@@ -119,7 +119,7 @@ function zonaSoltar(el, aceitar, aoEscolher, multiplo = false) {
   el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('sobre'); e.dataTransfer.files.length && aoEscolher([...e.dataTransfer.files]); });
 }
 const ehVideo = u => /\.(mp4|mov|webm|m4v)(\?|$)/i.test(u);
-const TIPOS = { post: 'Post', carrossel: 'Carrossel', story: 'Story', reel: 'Reel', 'story-video': 'Story vídeo', 'video-editado': 'Vídeo editado' };
+const TIPOS = { post: 'Post', carrossel: 'Carrossel', story: 'Story', reel: 'Reel', 'story-video': 'Story vídeo', 'video-editado': 'Vídeo editado', 'video-ia': 'Vídeo IA' };
 function cardPeca(p) {
   const midia = ehVideo(p.capa) ? `<video src="${esc(p.capa)}#t=0.5" muted preload="metadata"></video>` : `<img src="${esc(p.capa)}" loading="lazy" alt="">`;
   return `<a class="peca" href="#/peca?pasta=${encodeURIComponent(p.pasta)}"><div class="thumb">${midia}<span class="selo">${esc(TIPOS[p.tipo] || p.tipo)}</span></div><div class="info"><b>${esc(p.nome.replace(/^\d{4}-\d{2}-\d{2}-/, ''))}</b><span>${quando(p.alterado)}${p.arquivos.length > 1 ? ` · ${p.arquivos.length} arquivos` : ''}</span></div></a>`;
@@ -388,6 +388,41 @@ async function telaVideos() {
   $('#lista').innerHTML = ps.length ? ps.map(cardPeca).join('') : `<div class="card vazio" style="grid-column:1/-1">Nenhum vídeo editado ainda.</div>`;
 }
 
+// ---- vídeo gerado por IA (APIs: Google, Runway, Hailuo, Higgsfield, HeyGen) ----
+async function telaVideoIA() {
+  if (!cli()) return (tela.innerHTML = semCliente());
+  const [provs, dados] = await Promise.all([api('/api/videoia'), api(`/api/clientes/${S.cliente}`)]);
+  const prontos = provs.filter(p => p.pronta);
+  tela.innerHTML = `<div class="cab"><div><h1>Vídeo com IA</h1><p class="sub">Descreva a cena e a IA gera o vídeo. Com a foto do produto, ela anima o produto real. Cada serviço cobra pelos próprios créditos.</p></div></div>
+    ${prontos.length ? '' : `<div class="nota info" style="margin-bottom:16px">Nenhum serviço de vídeo configurado. Cole a chave de pelo menos um em <a href="#/ajustes">Ajustes</a>.</div>`}
+    <div class="grade g2"><div class="card form">
+      <label class="campo">Serviço<select class="inp" id="prov">${provs.map(p => `<option value="${p.id}">${esc(p.nome)}${p.pronta ? '' : ' (sem chave)'}</option>`).join('')}</select></label>
+      <label class="campo" id="cModelo">Modelo<select class="inp" id="modelo"></select></label>
+      <label class="campo">Cena<small>Câmera, luz, movimento e clima. Ex.: "câmera gira devagar ao redor do frasco sobre mármore, luz de fim de tarde".</small><textarea class="inp" id="prompt" rows="5"></textarea></label>
+      <label class="campo" id="cProd">Foto do produto (opcional)<select class="inp" id="produto"><option value="">Sem foto, só o texto</option>${(dados.produtosLista || []).filter(p => p.url).map(p => `<option value="${esc(p.chave)}">${esc(p.nome || p.chave)}</option>`).join('')}</select></label>
+      <div class="grade g2"><label class="campo">Formato<select class="inp" id="formato"><option>9:16</option><option>16:9</option><option>1:1</option></select></label><label class="campo">Duração (s)<input class="inp" id="duracao" type="number" min="2" max="30" placeholder="padrão do modelo"></label></div>
+      <div class="nota">A IA pode mudar o rótulo ou o logo do produto. Confira o vídeo antes de usar.</div>
+      <div class="linha" style="justify-content:flex-end"><button class="btn grande" id="gerar" ${prontos.length ? '' : 'disabled'}>${ico('video')}Gerar vídeo</button></div></div>
+      <div><h2 style="margin-bottom:12px">Vídeos gerados</h2><div class="grade auto" id="lista"><div class="sub">Carregando…</div></div></div></div>`;
+  pintarIcones(tela);
+  const prov = $('#prov');
+  if (prontos[0]) prov.value = prontos[0].id;
+  const trocar = () => {
+    const p = provs.find(x => x.id === prov.value) || provs[0];
+    $('#modelo').innerHTML = p.modelos.length ? p.modelos.map(m => `<option>${esc(m)}</option>`).join('') : '';
+    $('#cModelo').hidden = !p.modelos.length;
+    $('#cProd').hidden = !p.imagem;
+  };
+  prov.onchange = trocar; trocar();
+  $('#gerar').onclick = async () => {
+    const p = provs.find(x => x.id === prov.value);
+    const body = { cliente: S.cliente, provedor: p.id, modelo: p.modelos.length ? $('#modelo').value : '', prompt: $('#prompt').value, produto: p.imagem ? $('#produto').value : '', formato: $('#formato').value, duracao: $('#duracao').value };
+    try { const { job } = await api('/api/videoia', { body }); acompanhar(job, { titulo: 'Gerando vídeo com IA (pode levar alguns minutos)', aoTerminar: () => telaVideoIA() }); } catch (e) { falhou(e); }
+  };
+  const ps = (await api(`/api/pecas?cliente=${S.cliente}`)).filter(p => p.tipo === 'video-ia');
+  $('#lista').innerHTML = ps.length ? ps.map(cardPeca).join('') : `<div class="card vazio" style="grid-column:1/-1">Nenhum vídeo gerado ainda.</div>`;
+}
+
 // ---- áudios ----
 async function telaAudios() {
   if (!cli()) return (tela.innerHTML = semCliente());
@@ -547,7 +582,7 @@ async function telaAjustes() {
   const e = S.estado = await api('/api/estado');
   const f = e.ferramentas;
   const st = (ok, n, d) => `<div class="item"><span class="grow"><b>${n}</b><div class="sub" style="font-size:12.5px">${d}</div></span><span class="tag ${ok ? 'ok' : 'falta'}">${ok ? 'pronto' : 'falta'}</span></div>`;
-  const ch = (k, n, d) => `<label class="campo">${n} ${e.chaves[k] ? '<span class="tag ok">preenchida</span>' : '<span class="tag">vazia</span>'}<small>${d}</small><input class="inp" type="${k.endsWith('VOICE_ID') ? 'text' : 'password'}" autocomplete="off" data-ch="${k}" placeholder="${e.chaves[k] ? 'Deixe em branco para manter' : 'Cole aqui'}"></label>`;
+  const ch = (k, n, d) => `<label class="campo">${n} ${e.chaves[k] ? '<span class="tag ok">preenchida</span>' : '<span class="tag">vazia</span>'}<small>${d}</small><input class="inp" type="${/VOICE_ID|_APP$/.test(k) ? 'text' : 'password'}" autocomplete="off" data-ch="${k}" placeholder="${e.chaves[k] ? 'Deixe em branco para manter' : 'Cole aqui'}"></label>`;
   tela.innerHTML = `<div class="cab"><div><h1>Ajustes</h1><p class="sub">Ferramentas instaladas e chaves de serviços (opcionais).</p></div></div>
     <div class="grade g2"><div class="card"><h2 style="margin-bottom:12px">Ferramentas</h2><div class="lista">
       ${st(f.motor, 'Motor de artes e vídeos', 'Posts, carrosséis e reels animados')}${st(f.claude, 'IA (Claude Code)', 'Botões "Criar com IA" e "Pedir à IA"')}
@@ -557,6 +592,8 @@ async function telaAjustes() {
       <label class="campo" style="margin-top:12px">Conta da IA<small>"Minha conta do Claude" usa o login do Claude deste computador e ignora proxies configurados no Claude Code.</small><select class="inp" id="conta"><option value="claude" ${e.conta === 'claude' ? 'selected' : ''}>Minha conta do Claude (recomendado)</option><option value="sistema" ${e.conta === 'sistema' ? 'selected' : ''}>Configuração do Claude Code deste computador</option></select></label></div>
     <div class="card form" id="cardAtalhos"><h2>Atalhos</h2><p class="sub">Abra o Estúdio como um aplicativo, sem janela preta.</p><div class="sub">Verificando…</div></div>
     <div class="card form"><h2>Chaves da agência</h2><p class="sub">Cole cada chave e clique em Salvar. Elas ficam só neste computador e nunca aparecem de novo na tela.</p>${ch('ELEVENLABS_API_KEY', 'ElevenLabs', 'Narração dos reels e áudios')}<label class="campo">Voz padrão<small>Usada quando a marca não tem voz própria. 🇧🇷 = português do Brasil</small><select class="inp" data-ch="ELEVENLABS_VOICE_ID" id="vozPadrao"><option value="">Carregando vozes…</option></select></label><div id="notaVoz"></div>${ch('FAL_KEY', 'fal.ai', 'Ilustrações e fundos com IA')}
+      <h2 style="margin-top:8px">Vídeo com IA</h2><p class="sub">Só precisa de um. Runway sozinho já dá acesso a Veo 3.1, Kling, Hailuo e Seedance.</p>
+      ${ch('RUNWAYML_API_SECRET', 'Runway', 'dev.runwayml.com → API Keys')}${ch('GEMINI_API_KEY', 'Google Gemini (Omni Flash)', 'aistudio.google.com/apikey')}${ch('MINIMAX_API_KEY', 'Hailuo / MiniMax', 'platform.minimax.io → API Keys')}${ch('HEYGEN_API_KEY', 'HeyGen', 'app.heygen.com → Settings → API')}${ch('HIGGSFIELD_KEY', 'Higgsfield', 'cloud.higgsfield.ai → API Keys, no formato id:secret')}${ch('HIGGSFIELD_APP', 'Higgsfield: modelo', 'Caminho do modelo de vídeo no catálogo do Higgsfield Cloud')}
       <div class="linha" style="justify-content:flex-end"><button class="btn" id="salvar">${ico('check')}Salvar</button></div></div></div>`;
   pintarIcones(tela);
   $('#salvar').onclick = async () => { const chaves = {}; for (const i of $$('[data-ch]')) if (i.value.trim()) chaves[i.dataset.ch] = i.value; try { await api('/api/estado', { method: 'PUT', body: { chaves, modelo: $('#modelo').value } }); aviso('Ajustes salvos'); telaAjustes(); } catch (er) { falhou(er); } };
@@ -596,6 +633,7 @@ async function render() {
     else if (r === 'pecas') await telaPecas(q);
     else if (r === 'peca') await telaPeca(q);
     else if (r === 'videos') await telaVideos();
+    else if (r === 'videoia') await telaVideoIA();
     else if (r === 'audios') await telaAudios();
     else if (r === 'roteiros') await telaRoteiros(q);
     else if (r === 'clientes' && partes[1]) await telaCliente(partes[1], q);

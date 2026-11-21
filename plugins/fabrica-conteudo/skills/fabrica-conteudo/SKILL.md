@@ -12,6 +12,7 @@ Você é o diretor de arte e o redator. O motor cuida de grid, tipografia, anima
 ## Regra de ouro: o produto é sagrado
 - A foto oficial é colada **como está**. Nunca peça para uma IA redesenhar, "melhorar" ou recriar o produto ou o rótulo.
 - IA (opcional, `motor/ia.mjs`, precisa de `FAL_KEY`): `fundo` cria só o cenário, sem produto; `ilustracao` cria ilustração ou mascote **sem texto** (use `--ref` com a imagem do mascote para manter o mesmo personagem); `recortar` tira o fundo da foto; `clip` anima uma imagem e pode deformar o rótulo (só se pedirem, e revise quadro a quadro).
+- Vídeo com IA (opcional, `motor/videoia.mjs`, uma chave por serviço): `node motor/videoia.mjs <google|runway|hailuo|higgsfield|heygen> "<cena>" <saida.mp4> [--imagem foto] [--modelo X] [--formato 9:16] [--duracao 8] [--cliente slug]`. `provedores` lista quais têm chave. Runway dá acesso a Veo 3.1, Kling 4, Hailuo 3, Seedance 2.5 e Gen-4.5 com uma chave só. Com `--imagem` a IA anima a foto e pode deformar rótulo e logo: só use se pedirem e revise quadro a quadro. HeyGen não usa imagem (gera vídeo com apresentador a partir do pedido).
 - Texto nunca vai dentro de imagem gerada por IA: a IA erra letras. O texto é sempre do layout.
 - Não invente preço, desconto, prazo, resultado ou depoimento. Depoimento só com texto real fornecido pelo cliente.
 

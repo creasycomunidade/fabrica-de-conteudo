@@ -7,7 +7,7 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(AQUI, '..');
@@ -52,7 +52,7 @@ function rodar(j, cmd, args, { cwd = ROOT, entrada, aoLinha } = {}) {
     pr.stdout.on('data', linha); pr.stderr.on('data', d => logar(j, d));
     if (entrada) pr.stdin.end(entrada); else pr.stdin.end();
     pr.on('error', erro);
-    pr.on('close', c => { if (buf) aoLinha ? aoLinha(buf) : logar(j, buf); c === 0 ? ok() : erro(new Error(`${path.basename(cmd)} terminou com erro (${c})`)); });
+    pr.on('close', c => { if (buf) aoLinha ? aoLinha(buf) : logar(j, buf); if (c === 0) return ok(); const msg = [...j.log].reverse().find(l => l.startsWith('ERRO:')); erro(new Error(msg ? msg.replace(/^ERRO:\s*/, '') : `${path.basename(cmd)} terminou com erro (${c})`)); });
   });
 }
 async function executar(j, fn) {
@@ -177,7 +177,7 @@ function resumoCliente(slug) {
   return { slug, ...m, produtosLista: prods, logoUrl: m.logo && fs.existsSync(P('clientes', slug, m.logo)) ? url(P('clientes', slug, m.logo)) : null, nPecas: pecas.length, ultima: pecas[0]?.capa || null };
 }
 const CHAVES = ['METRICOOL_TOKEN', 'METRICOOL_USER_ID', 'METRICOOL_BLOG_ID', 'META_PAGE_ID', 'META_PAGE_TOKEN', 'IG_USER_ID', 'WEBHOOK_URL'];
-const CHAVES_GERAIS = ['FAL_KEY', 'ELEVENLABS_API_KEY', 'ELEVENLABS_VOICE_ID'];
+const CHAVES_GERAIS = ['FAL_KEY', 'ELEVENLABS_API_KEY', 'ELEVENLABS_VOICE_ID', 'GEMINI_API_KEY', 'RUNWAYML_API_SECRET', 'MINIMAX_API_KEY', 'HIGGSFIELD_KEY', 'HIGGSFIELD_APP', 'HEYGEN_API_KEY'];
 function lerEnv(f) { const o = {}; if (fs.existsSync(f)) for (const l of fs.readFileSync(f, 'utf8').split(/\r?\n/)) { const m = l.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)$/); if (m) o[m[1]] = m[2].trim(); } return o; }
 function gravarEnv(f, novos, permitidas) {
   const atual = lerEnv(f);
@@ -400,6 +400,39 @@ rota('POST', '/api/video', async (req, b) => {
     return { job: jobVideo(b.cliente, path.join(dir, v.baseLegenda), { legenda: true, srt: 'legenda.srt', formatos: v.op?.formatos || [] }).id };
   }
   return { job: jobVideo(b.cliente, origem, op).id };
+});
+rota('GET', '/api/videoia', async () => {
+  const { PROVEDORES } = await import(pathToFileURL(P('motor', 'videoia.mjs')).href);
+  const env = lerEnv(P('.env'));
+  return Object.entries(PROVEDORES).map(([id, p]) => ({ id, nome: p.nome, chave: p.chave, pronta: !!env[p.chave], imagem: p.imagem, modelos: p.modelos }));
+});
+rota('POST', '/api/videoia', async (req, b) => {
+  cliente(b.cliente);
+  const { PROVEDORES } = await import(pathToFileURL(P('motor', 'videoia.mjs')).href);
+  if (!PROVEDORES[b.provedor]) throw Object.assign(new Error('Escolha o serviço de vídeo'), { status: 400 });
+  const prompt = String(b.prompt || '').trim();
+  if (!prompt) throw Object.assign(new Error('Descreva a cena do vídeo'), { status: 400 });
+  if (b.modelo && !/^[\w.:\/-]{1,120}$/.test(b.modelo)) throw Object.assign(new Error('Modelo inválido'), { status: 400 });
+  const formato = ['9:16', '16:9', '1:1'].includes(b.formato) ? b.formato : '9:16';
+  let foto = null;
+  if (b.produto) {
+    const pr = lerJson(P('clientes', b.cliente, 'marca.json')).produtos?.[b.produto];
+    if (!pr?.foto) throw Object.assign(new Error('Produto sem foto'), { status: 400 });
+    foto = seguro(`clientes/${b.cliente}/${pr.foto}`, 'clientes');
+  }
+  const dir = P('saida', b.cliente, 'videos-ia', `${hoje()}-${slugify(prompt.slice(0, 30))}-${Date.now() % 100000}`);
+  fs.mkdirSync(dir, { recursive: true });
+  const j = novoJob(`Vídeo IA (${PROVEDORES[b.provedor].nome})`, b.cliente);
+  executar(j, async () => {
+    const args = [P('motor', 'videoia.mjs'), b.provedor, prompt, path.join(dir, 'video.mp4'), '--formato', formato, '--cliente', b.cliente];
+    if (b.modelo) args.push('--modelo', b.modelo);
+    if (foto) args.push('--imagem', foto);
+    if (+b.duracao > 0) args.push('--duracao', String(Math.min(30, Math.round(+b.duracao))));
+    await rodar(j, process.execPath, args).catch(e => { fs.rmSync(dir, { recursive: true, force: true }); throw e; });
+    salvarJson(path.join(dir, 'peca.json'), { cliente: b.cliente, tipo: 'video-ia', formato, arquivos: ['video.mp4'], legenda: '', provedor: b.provedor, modelo: b.modelo || '', prompt, produto: b.produto || '', avisos: foto ? ['Vídeo gerado por IA a partir da foto: confira rótulo, logo e formato do produto quadro a quadro antes de usar.'] : [], criado: new Date().toISOString() });
+    return { pecas: [rel(dir)], resumo: 'Vídeo gerado' };
+  });
+  return { job: j.id };
 });
 rota('GET', '/api/vozes', async () => {
   const r = spawnSync(process.execPath, [P('motor', 'voz.mjs'), 'vozes'], { cwd: ROOT, encoding: 'utf8' });
