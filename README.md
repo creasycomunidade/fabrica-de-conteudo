@@ -67,6 +67,7 @@ Os botões de IA usam o Claude Code deste computador em segundo plano (`claude -
 | `/fabrica-conteudo:novo-cliente` | Cadastra marca, produtos (fotos oficiais) e redes |
 | `/fabrica-conteudo:criar-post` | Post, carrossel ou story com legenda |
 | `/fabrica-conteudo:criar-video` | Reel ou story em vídeo |
+| `/fabrica-conteudo:video-completo` | Anúncio completo: personagem com o produto real, narração, legenda, música e cartela final (vídeo com IA) |
 | `/fabrica-conteudo:pauta` | Pesquisa tendências, concorrentes e datas, e propõe ideias com gancho |
 | `/fabrica-conteudo:campanha` | Calendário, todas as peças e agendamento |
 | `/fabrica-conteudo:editar-video` | Vídeo gravado: corte de silêncio, legenda na fonte da marca, áudio, versões por rede (via ffmpeg-skill) |
@@ -100,7 +101,7 @@ plugins/fabrica-conteudo/
   skills/          regras da fábrica (formato de marca.json e dos specs)
   agents/          6 agentes de marketing (agency-agents, MIT)
   estudio/         servidor.mjs + public/ (interface no navegador) e atalhos Abrir Estudio
-  motor/           render.mjs, templates.mjs, revisao.mjs, imagem.mjs, fonte.mjs, voz.mjs, metricool.mjs, publicar.mjs, ia.mjs, videoia.mjs, teste.mjs, demo/
+  motor/           render.mjs, templates.mjs, revisao.mjs, imagem.mjs, fonte.mjs, voz.mjs, metricool.mjs, publicar.mjs, ia.mjs, videoia.mjs, completo.mjs, teste.mjs, demo/
 ```
 
 ## Licença e créditos

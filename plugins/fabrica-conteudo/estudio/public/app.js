@@ -130,7 +130,7 @@ const semCliente = () => `<div class="card vazio">${ico('pessoas')}<h2>Cadastre 
 const ATALHOS = [
   ['post', 'imagem', 'Post', 'Uma imagem para o feed'], ['carrossel', 'carrossel', 'Carrossel', 'Vários slides, dicas ou produtos'],
   ['reel', 'reel', 'Reel animado', 'Vídeo com a foto do produto'], ['story', 'story', 'Story', 'Imagem vertical 9:16'],
-  ['roteiro', 'doc', 'Roteiro', 'Texto para gravar ou animar'], ['pauta', 'ideia', 'Ideias de pauta', 'Pesquisa e sugestões de posts'],
+  ['anuncio', 'video', 'Vídeo completo', 'Personagem, narração e legenda'], ['roteiro', 'doc', 'Roteiro', 'Texto para gravar ou animar'], ['pauta', 'ideia', 'Ideias de pauta', 'Pesquisa e sugestões de posts'],
 ];
 async function telaInicio() {
   if (!S.clientes.length) return (tela.innerHTML = `<div class="cab"><div><h1>Bem-vindo ao Estúdio</h1><p class="sub">Crie posts, carrosséis, reels, áudios e roteiros com a identidade de cada marca.</p></div></div>${semCliente()}`);
@@ -153,6 +153,7 @@ const EXEMPLOS = {
   carrossel: 'Ex.: carrossel com 5 dicas de cronograma capilar, terminando com convite para comentar "QUERO".',
   story: 'Ex.: story de oferta relâmpago do kit Nutri Rosé, válido só hoje.',
   reel: 'Ex.: reel de 15 segundos apresentando a máscara de reparação, começando com "Cabelo ressecado?".',
+  anuncio: 'Ex.: vídeo de 20 segundos para vender o tênis de corrida, com personagem feminina e narração animada.',
   roteiro: 'Ex.: roteiro de reel de 30 segundos ensinando a montar o cronograma capilar com os produtos da marca.',
   pauta: 'Ex.: ideias de posts para dezembro, com foco em presentes de Natal.',
 };
@@ -279,7 +280,7 @@ async function telaPeca(q) {
   const temSpec = !!pc.spec;
   let itens = temSpec ? JSON.parse(JSON.stringify(pc.spec.slides || pc.spec.cenas || [])) : [];
   let atual = 0;
-  const abas = [temSpec && ['editar', 'Editar textos'], ['legenda', 'Legenda do post'], temSpec && ['ia', 'Pedir à IA'], pc.srt != null && ['srt', 'Legenda do vídeo'], ['arquivos', 'Baixar']].filter(Boolean);
+  const abas = [temSpec && ['editar', 'Editar textos'], ['legenda', 'Legenda do post'], (temSpec || pc.anuncio) && ['ia', 'Pedir à IA'], pc.srt != null && ['srt', 'Legenda do vídeo'], ['arquivos', 'Baixar']].filter(Boolean);
   let aba = abas[0][0];
   const palco = () => { const u = pc.arquivosUrl[atual]; return ehVideo(u) ? `<video src="${esc(u)}" controls playsinline></video>` : `<img src="${esc(u)}?v=${Date.now()}" alt="">`; };
   const desenhar = () => {

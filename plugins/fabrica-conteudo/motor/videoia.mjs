@@ -7,6 +7,7 @@
 //   runway      Runway Dev: Gen-4.5, Veo 3.1, Kling 4, Hailuo 3, Seedance 2.5, Gemini Omni  RUNWAYML_API_SECRET
 //   hailuo      MiniMax H3 (Hailuo)                                      MINIMAX_API_KEY
 //   higgsfield  Higgsfield Cloud (informe o app com --modelo)            HIGGSFIELD_KEY=id:secret
+//   fal         Kling 2.5 pela fal.ai                                     FAL_KEY
 //   heygen      HeyGen Video Agent (vídeo pronto a partir do pedido)     HEYGEN_API_KEY
 // Regra da fábrica: IA pode deformar rótulo e logo do produto. Revise quadro a quadro antes de usar.
 import fs from 'node:fs';
@@ -87,7 +88,12 @@ export function corpoRunway(modelo, { prompt, imagemUri, formato = '9:16', durac
   if (imagemUri) b.promptImage = imagemUri;
   const ratio = m.r?.[formato];
   if (ratio && !(imagemUri && m.semRatioImagem)) b.ratio = ratio;
-  if (m.d) { const [lo, hi] = [m.d[0], m.d.at(-1)]; let d = Math.min(hi, Math.max(lo, duracao || (m.exige ? 5 : lo))); if (m.d.length > 2) d = m.d.reduce((x, y) => (Math.abs(y - d) < Math.abs(x - d) ? y : x)); if (duracao || m.exige) b.duration = d; }
+  if (m.d) {
+    const [lo, hi] = [m.d[0], m.d.at(-1)];
+    let d = Math.min(hi, Math.max(lo, Math.ceil(duracao || (m.exige ? 5 : lo))));
+    if (m.d.length > 2) d = m.d.find(x => x >= d) ?? hi; // round up so the clip covers the narration
+    if (duracao || m.exige) b.duration = d;
+  }
   return b;
 }
 async function runway(env, { prompt, imagem, formato, duracao, modelo, saida }) {
@@ -145,6 +151,21 @@ async function higgsfield(env, { prompt, imagem, formato, duracao, modelo, saida
   await baixar(url, saida);
 }
 
+// ---------- fal.ai (Kling 2.5, a mesma FAL_KEY das ilustrações) ----------
+async function fal(env, { prompt, imagem, formato, duracao, saida }) {
+  const k = chave(env, 'FAL_KEY', 'fal.ai/dashboard/keys');
+  const h = { Authorization: `Key ${k}`, 'Content-Type': 'application/json' };
+  const modelo = imagem ? 'fal-ai/kling-video/v2.5-turbo/pro/image-to-video' : 'fal-ai/kling-video/v2.5-turbo/pro/text-to-video';
+  const input = { prompt, duration: (duracao || 5) > 5 ? '10' : '5', ...(imagem ? { image_url: dataUri(imagem) } : { aspect_ratio: formato || '9:16' }) };
+  const j = await json(`https://queue.fal.run/${modelo}`, { method: 'POST', headers: h, body: JSON.stringify(input) });
+  await poll(async () => {
+    const s = await json(j.status_url, { headers: h });
+    if (s.status === 'COMPLETED') return s;
+    if (s.status === 'FAILED' || s.error) throw erro(`fal.ai: ${JSON.stringify(s.error || s).slice(0, 200)}`);
+  });
+  await baixar(acharVideo(await json(j.response_url, { headers: h })), saida);
+}
+
 // ---------- HeyGen Video Agent ----------
 async function heygen(env, { prompt, formato, saida }) {
   const k = chave(env, 'HEYGEN_API_KEY', 'app.heygen.com → Settings → API');
@@ -169,6 +190,7 @@ export const PROVEDORES = {
   runway: { nome: 'Runway (Veo 3.1, Kling 4, Hailuo 3, Seedance, Gen-4.5)', chave: 'RUNWAYML_API_SECRET', fn: runway, imagem: true, modelos: Object.keys(RUNWAY) },
   hailuo: { nome: 'Hailuo (MiniMax H3)', chave: 'MINIMAX_API_KEY', fn: hailuo, imagem: true, modelos: ['MiniMax-H3', 'MiniMax-H3-Highspeed', 'MiniMax-H3-Lite', 'MiniMax-H3-Max'] },
   higgsfield: { nome: 'Higgsfield Cloud', chave: 'HIGGSFIELD_KEY', fn: higgsfield, imagem: true, modelos: [] },
+  fal: { nome: 'fal.ai (Kling 2.5)', chave: 'FAL_KEY', fn: fal, imagem: true, modelos: [] },
   heygen: { nome: 'HeyGen Video Agent', chave: 'HEYGEN_API_KEY', fn: heygen, imagem: false, modelos: [] },
 };
 
@@ -190,7 +212,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     } else if (cmd === 'teste') {
       // Offline self-check of the request builders and the URL finder.
       const b = corpoRunway('veo3.1', { prompt: 'x', formato: '9:16', duracao: 7 });
-      if (b.ratio !== '720:1280' || b.duration !== 6) throw erro('corpoRunway falhou');
+      if (b.ratio !== '720:1280' || b.duration !== 8) throw erro('corpoRunway falhou');
       if (acharVideo({ data: { content: { url: 'https://cdn.x/v.mp4' } } }) !== 'https://cdn.x/v.mp4') throw erro('acharVideo falhou');
       console.log('ok');
     } else {

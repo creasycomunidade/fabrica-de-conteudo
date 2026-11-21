@@ -99,6 +99,15 @@ Educativo: carrossel `capa` → `cards`/`topico`/`comparativo`/`mockup` → `com
 ## Estúdio
 Quem não programa usa o Estúdio no navegador (`node estudio/servidor.mjs`, atalho **Abrir Estudio**). Os botões de IA dele chamam o Claude Code em segundo plano com esta skill; o pedido chega com o cliente, os anexos e a instrução de terminar com uma linha JSON `{"pecas":[...],"arquivos":[...],"resumo":"..."}`. Respeite esse formato quando ele for pedido.
 
+## Vídeo completo (anúncio com personagem)
+`node motor/completo.mjs anuncio.json` (comando `/fabrica-conteudo:video-completo`). Gera tudo de uma vez:
+1. Cria a personagem (FAL_KEY), com o produto real.
+2. Para cada cena: narração (ElevenLabs), quadro inicial com a personagem e o produto (Nano Banana com as duas referências) e o clipe animado pelo serviço de vídeo.
+3. Cartela final com o layout da marca.
+4. Monta tudo em 1080x1920, com legenda palavra a palavra na fonte da marca, música com volume automático sob a voz e volume padrão das redes.
+
+Campos: `cliente`, `nome`, `produto`, `personagem`, `referencia?`, `provedor?` (runway, google, hailuo, fal, higgsfield), `modelo?`, `voz?`, `musica?`, `legendas?`, `cenas: [{fala, cena, clip?}]`, `cartela?`, `legenda`, `hashtags`. Uma `cena` com `clip` usa um vídeo pronto (gravado pelo cliente) em vez de gerar. Tudo o que é pago fica em cache em `partes/`. Na conta gratuita do ElevenLabs só as vozes padrão (Sarah, Laura, Jessica…) funcionam pela API, e elas falam português com o modelo multilíngue.
+
 ## Vídeo gravado
 `/fabrica-conteudo:editar-video` usa a skill `ffmpeg-skill` (local, sem chave): corte de silêncio e vícios de fala, legenda palavra a palavra com transcrição local (faster-whisper) na fonte da marca (`node motor/fonte.mjs <cliente>`), volume padrão das redes, música com ducking, versões 9:16/1:1/4:5/16:9, cortes de vídeo longo, checagem por plataforma. Corrija a transcrição antes de gravar a legenda final.
 

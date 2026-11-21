@@ -92,9 +92,10 @@ function promptPara({ tipo, slug, pedido, anexos = [], pasta, formato, narracao 
     carrossel: `Crie um carrossel${formato ? ` no formato ${formato}` : ''}. ${peca}`,
     story: `Crie um story (imagem 9:16). ${peca}`,
     reel: `Crie um reel (vídeo animado 9:16) seguindo o comando criar-video da fábrica.${narracao ? ' Inclua narração com "fala" em cada cena (ElevenLabs).' : ' Sem narração.'} ${peca}`,
+    anuncio: `Crie um vídeo de anúncio completo (personagem, produto real, narração, legenda e cartela) seguindo o comando video-completo da fábrica: roteiro em 3 a 5 cenas, spec em saida/${slug}/specs/ e node motor/completo.mjs <spec> com timeout de 540000 ms no Bash (se estourar, rode de novo: o cache continua de onde parou). Revise os quadros e a capa antes de terminar.`,
     roteiro: `Escreva um roteiro${formato ? ` (${formato})` : ''} pronto para gravar ou animar: gancho forte nos 2 primeiros segundos (use a skill yt-script se ajudar), falas, o que aparece na tela e duração de cada parte. Salve em saida/${slug}/roteiros/${hoje()}-<nome-curto>.md.`,
     pauta: `Faça uma pauta de conteúdo seguindo o comando pauta da fábrica. Salve em saida/${slug}/pautas/${hoje()}-<tema>.md.`,
-    ajuste: `Ajuste a peça existente em ${pasta} (o spec está em ${pasta}/peca.json, campo "spec"). Edite o spec conforme o pedido, mantenha "saida": "${pasta}" e renderize de novo com node motor/render.mjs.`,
+    ajuste: `Ajuste a peça existente em ${pasta} (o spec está em ${pasta}/peca.json, campo "spec"; se o campo for "anuncio", é um vídeo completo). Edite conforme o pedido, mantenha "saida": "${pasta}" e gere de novo com node motor/render.mjs (spec) ou node motor/completo.mjs (anuncio, salvo como arquivo JSON). No vídeo completo, mude só as cenas pedidas: as outras saem do cache.`,
   }[tipo];
   if (!t) throw Object.assign(new Error('tipo inválido'), { status: 400 });
   return `${base}\n${t}${anx}${ped}\n${REGRAS}`;
