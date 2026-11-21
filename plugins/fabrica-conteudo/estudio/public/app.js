@@ -174,6 +174,7 @@ async function telaCriar(q) {
       <div class="linha">
         ${['post', 'carrossel'].includes(tipo) ? `<label class="campo">Formato<select class="inp" id="formato"><option value="">Automático</option><option value="retrato">Retrato 4:5 (feed)</option><option value="quadrado">Quadrado 1:1</option><option value="story">Vertical 9:16</option></select></label>` : ''}
         ${tipo === 'roteiro' ? `<label class="campo">Para<select class="inp" id="formato"><option>Reel de 30 segundos</option><option>Reel de 15 segundos</option><option>Vídeo de YouTube (5 a 8 min)</option><option>Carrossel de 6 slides</option><option>Story em sequência</option></select></label>` : ''}
+        ${['anuncio', 'reel'].includes(tipo) ? `<label class="campo">Produto<small>${tipo === 'anuncio' ? 'A IA usa a foto oficial para o produto sair fiel.' : ''}</small><select class="inp" id="produto"><option value="">${(cli().produtosLista || []).length ? 'Escolha o produto' : 'Nenhum produto cadastrado'}</option>${(cli().produtosLista || []).map(p => `<option value="${esc(p.chave)}">${esc(p.nome || p.chave)}</option>`).join('')}<option value="anexo">Outro: vou anexar a foto abaixo</option></select></label>` : ''}
         ${tipo === 'reel' ? `<label class="chip ${semVoz ? '' : 'on'}"><input type="checkbox" id="narracao" ${semVoz ? 'disabled' : ''}> Com narração ${semVoz ? '(configure o ElevenLabs em Ajustes)' : ''}</label>` : ''}
       </div>
       <div><b style="font-size:13px">Arquivos de apoio <small class="sub">(opcional: fotos de produto, referência, texto)</small></b>
@@ -190,9 +191,16 @@ async function telaCriar(q) {
     $('#criar').addEventListener('click', async () => {
       const pedido = $('#pedido').value.trim();
       if (!pedido) return aviso('Escreva o que você quer criar', true);
+      const produto = $('#produto')?.value || '';
+      if (tipo === 'anuncio' && (!produto || produto === 'anexo') && !anexos.length) return aviso('Escolha o produto ou anexe a foto dele em Arquivos de apoio', true);
       try {
-        const { job } = await api('/api/ia', { body: { tipo, slug: S.cliente, pedido, anexos, formato: $('#formato')?.value || '', narracao: $('#narracao')?.checked } });
-        acompanhar(job, { titulo: `Criando ${ATALHOS.find(a => a[0] === tipo)[2].toLowerCase()} para ${cli().nome}`, aoTerminar: j => { if (j.status === 'ok' && (j.resultado?.arquivos || []).some(a => /\.md$/.test(a))) aviso('Pronto! Veja em Roteiros e pautas.'); } });
+        const { job } = await api('/api/ia', { body: { tipo, slug: S.cliente, pedido, anexos, formato: $('#formato')?.value || '', narracao: $('#narracao')?.checked, produto: produto === 'anexo' ? '' : produto } });
+        acompanhar(job, { titulo: `Criando ${ATALHOS.find(a => a[0] === tipo)[2].toLowerCase()} para ${cli().nome}`, aoTerminar: j => {
+          if (j.status !== 'ok') return;
+          const pc = j.resultado?.pecas?.[0];
+          if (pc) location.hash = `#/peca?pasta=${encodeURIComponent(pc)}`; // show the new piece right away
+          else if ((j.resultado?.arquivos || []).some(a => /\.md$/.test(a))) location.hash = '#/roteiros';
+        } });
       } catch (e) { falhou(e); }
     });
   };

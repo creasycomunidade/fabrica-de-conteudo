@@ -82,10 +82,10 @@ function ambienteClaude(c) {
 }
 const FERRAMENTAS = ['Read', 'Write', 'Edit', 'Glob', 'Grep', 'Skill', 'Bash(node motor/*)', 'Bash(node motor/render.mjs *)', `Bash(${PY} *)`, 'Bash(ffmpeg *)', 'Bash(ls *)', 'Bash(mkdir *)'];
 const REGRAS = 'Não publique nem agende nada. Não leia nem altere arquivos .env. Ao terminar, a ÚLTIMA linha da resposta deve ser só um JSON: {"pecas":["saida/<cliente>/<pasta>"],"arquivos":["caminhos de .md/.mp3 criados"],"resumo":"uma frase"}.';
-function promptPara({ tipo, slug, pedido, anexos = [], pasta, formato, narracao }) {
+function promptPara({ tipo, slug, pedido, anexos = [], pasta, formato, narracao, produto }) {
   const base = `Você está no Estúdio da Fábrica de Conteúdo, na pasta de trabalho atual. Siga a skill fabrica-conteudo. Cliente: ${slug} (clientes/${slug}/marca.json).`;
   const anx = anexos.length ? `\nArquivos enviados pelo usuário: ${anexos.join(', ')}. Se forem fotos de produto, recorte com node motor/imagem.mjs recortar (use --ia se o fundo não for liso), confira o recorte e cadastre o produto no marca.json.` : '';
-  const ped = `\nPedido do usuário: """${pedido}"""`;
+  const ped = `${produto ? `\nProduto: "${produto}" (chave em produtos do marca.json, use a foto oficial dele).` : ''}\nPedido do usuário: """${pedido}"""`;
   const peca = `Salve o spec em saida/${slug}/specs/ com "saida": "saida/${slug}/<nome-curto>" e renderize com node motor/render.mjs <spec>. Revise as imagens geradas e corrija o que precisar.`;
   const t = {
     post: `Crie um post (imagem única)${formato ? ` no formato ${formato}` : ''}. ${peca}`,
@@ -147,6 +147,7 @@ function jobClaude(dados) {
     // Only folders that really are pieces get an "open" button.
     r.pecas = (r.pecas || []).filter(x => { try { return fs.existsSync(path.join(seguro(x, 'saida'), 'peca.json')); } catch { return false; } });
     if (dados.slug) spawnSync(process.execPath, [P('motor', 'revisao.mjs'), dados.slug], { cwd: ROOT });
+    if (dados.tipo !== 'editor' && !r.pecas.length && !(r.arquivos || []).length) throw new Error(r.resumo || 'A IA terminou sem criar nada.');
     return r;
   });
   return j;
@@ -378,6 +379,7 @@ rota('DELETE', '/api/peca', async req => {
 
 rota('POST', '/api/ia', async (req, b) => {
   if (b.slug) cliente(b.slug);
+  if (b.produto && !/^[\w-]{1,60}$/.test(b.produto)) throw Object.assign(new Error('produto inválido'), { status: 400 });
   if (b.tipo === 'editor') throw Object.assign(new Error('use /api/editor/pedido'), { status: 400 });
   if (b.tipo === 'ajuste') seguro(b.pasta, 'saida');
   for (const a of b.anexos || []) seguro(a, 'clientes', 'saida');
