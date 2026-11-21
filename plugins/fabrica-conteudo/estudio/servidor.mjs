@@ -147,7 +147,9 @@ function jobClaude(dados) {
     // Only folders that really are pieces get an "open" button.
     r.pecas = (r.pecas || []).filter(x => { try { return fs.existsSync(path.join(seguro(x, 'saida'), 'peca.json')); } catch { return false; } });
     if (dados.slug) spawnSync(process.execPath, [P('motor', 'revisao.mjs'), dados.slug], { cwd: ROOT });
-    if (dados.tipo !== 'editor' && !r.pecas.length && !(r.arquivos || []).length) throw new Error(r.resumo || 'A IA terminou sem criar nada.');
+    // Visual types must end in a real piece; a spec or script file alone is not "done".
+    const precisaPeca = ['post', 'carrossel', 'story', 'reel', 'anuncio'].includes(dados.tipo);
+    if (dados.tipo !== 'editor' && !r.pecas.length && (precisaPeca || !(r.arquivos || []).length)) throw new Error(r.resumo || 'A IA terminou sem criar nada.');
     return r;
   });
   return j;
