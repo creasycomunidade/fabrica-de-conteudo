@@ -12,8 +12,8 @@ O próprio setup faz a **análise de requisitos** (`plugins/fabrica-conteudo/ins
 | Nível | Itens |
 |---|---|
 | Obrigatório | Node.js 20+, Chrome ou Edge, Git, Claude Code com login |
-| Recomendado | Python 3.10+, FFmpeg, ffmpeg-skill, faster-whisper, 5 GB livres, internet |
-| Opcional | backgroundremover, skills de YouTube, skills de animação |
+| Recomendado | Python 3.10+, FFmpeg, ffmpeg-skill, faster-whisper, rembg (recorte com IA), 5 GB livres, internet |
+| Opcional | skills de YouTube, skills de animação |
 
 - Chaves de serviços pagos, todas opcionais (preenchidas pela tela **Ajustes** do Estúdio, sem abrir arquivo): (cada um liga um recurso, todos pagos por uso ou por plano):
 
@@ -82,7 +82,7 @@ Também dá para pedir em linguagem natural ("cria um carrossel com 3 dicas para
 - **Texto que cabe**: o motor ajusta o tamanho do título e avisa quando o texto está longo demais.
 - **Vídeos**: animação com GSAP (texto revelado palavra a palavra, produto entrando e flutuando, transições de cortina, lateral e círculo), exportados em MP4 1080×1920 a 30 fps, com capa. Narração opcional (ElevenLabs) com legenda palavra a palavra sincronizada e música por baixo da voz.
 - **Vídeo gravado**: [ffmpeg-skill](https://github.com/kajisho5/ffmpeg-skill) com transcrição local (faster-whisper): corte de silêncio e vícios de fala, legenda palavra a palavra na fonte da marca, volume padrão, versões por rede. Tudo local e grátis.
-- **Recorte de produto**: local e grátis, para fundo liso (`imagem.mjs recortar`) ou cenário (`--ia`, backgroundremover).
+- **Recorte de produto**: local e grátis, com IA (BiRefNet via rembg) e limpeza da borda: sem halo branco do fundo antigo e sem pedaços de produto vizinho. Baixa o modelo (~1 GB) no primeiro uso.
 - **Estratégia**: 6 agentes de marketing ([agency-agents](https://github.com/msitarzewski/agency-agents), MIT) dentro do plugin, mais as skills de YouTube e de animação instaladas pelo setup.
 - **Texto sem cara de IA**: a skill traz regras contra os vícios típicos de texto gerado por IA.
 - **Revisão**: `revisao.html` reúne todas as peças e legendas para a equipe ou o cliente aprovarem.

@@ -32,8 +32,9 @@ Todo o resto do código, os layouts, os ícones de interface, o ícone da Fábri
 | [faster-whisper](https://github.com/SYSTRAN/faster-whisper) | SYSTRAN | MIT | Transcrição local |
 | [CTranslate2](https://github.com/OpenNMT/CTranslate2) | OpenNMT | MIT | Motor do faster-whisper |
 | Modelos [Whisper](https://github.com/openai/whisper) | OpenAI | MIT | Reconhecimento de fala |
-| [backgroundremover](https://github.com/nadermx/backgroundremover) | nadermx | MIT | Recorte de produto com IA |
-| Modelo [U²-Net](https://github.com/xuebinqin/U-2-Net) | Xuebin Qin e colaboradores | Apache 2.0 | Rede usada pelo backgroundremover |
+| [rembg](https://github.com/danielgatis/rembg) | Daniel Gatis | MIT | Recorte de produto com IA |
+| Modelo [BiRefNet](https://github.com/ZhengPeng7/BiRefNet) | Peng Zheng e colaboradores | MIT | Rede de segmentação usada no recorte |
+| [SciPy](https://scipy.org), [NumPy](https://numpy.org) e [Pillow](https://python-pillow.org) | Comunidades SciPy, NumPy e Pillow | BSD / MIT-CMU | Limpeza da borda do recorte |
 | [youtube-agent-skill](https://github.com/Jakeschincariol/youtube-agent-skill) | Jake Schincariol | MIT | Ganchos, roteiro, título e thumbnail |
 | [Skills de animação](https://github.com/emilkowalski/skills) | Emil Kowalski | MIT | Boas práticas de movimento |
 | [skills CLI](https://www.npmjs.com/package/skills) | Vercel Labs | (do pacote) | Instala as skills de animação |

@@ -46,8 +46,8 @@ const itens = [
       return { ok: (versao(av)[0] || 0) < 16, info: av ? `av ${av}${versao(av)[0] >= 16 ? ' (precisa ser menor que 16)' : ''}` : '' };
     },
     win: 'pip install faster-whisper "av<16"', mac: 'pip3 install faster-whisper "av<16"' },
-  { id: 'bgremover', nome: 'backgroundremover (recorte com IA)', nivel: 'opcional', para: 'Tirar fundo de foto de produto com cenário',
-    teste: () => ({ ok: py('backgroundremover'), info: '' }), win: 'pip install backgroundremover', mac: 'pip3 install backgroundremover' },
+  { id: 'bgremover', nome: 'rembg + BiRefNet (recorte com IA)', nivel: 'recomendado', para: 'Tirar o fundo da foto do produto com borda limpa',
+    teste: () => ({ ok: py('rembg'), info: '' }), win: 'pip install rembg', mac: 'pip3 install rembg' },
   { id: 'youtube', nome: 'Skills de YouTube (yt-*)', nivel: 'opcional', para: 'Ganchos com nota, roteiro, título e thumbnail',
     teste: () => ({ ok: !!plugins['youtube-agent@youtube-agent-skill'], info: '' }),
     win: 'claude plugin marketplace add Jakeschincariol/youtube-agent-skill && claude plugin install youtube-agent@youtube-agent-skill', mac: 'claude plugin marketplace add Jakeschincariol/youtube-agent-skill && claude plugin install youtube-agent@youtube-agent-skill' },

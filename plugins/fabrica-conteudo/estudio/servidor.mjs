@@ -84,7 +84,7 @@ const FERRAMENTAS = ['Read', 'Write', 'Edit', 'Glob', 'Grep', 'Skill', 'Bash(nod
 const REGRAS = 'Não publique nem agende nada. Não leia nem altere arquivos .env. Ao terminar, a ÚLTIMA linha da resposta deve ser só um JSON: {"pecas":["saida/<cliente>/<pasta>"],"arquivos":["caminhos de .md/.mp3 criados"],"resumo":"uma frase"}.';
 function promptPara({ tipo, slug, pedido, anexos = [], pasta, formato, narracao, produto }) {
   const base = `Você está no Estúdio da Fábrica de Conteúdo, na pasta de trabalho atual. Siga a skill fabrica-conteudo. Cliente: ${slug} (clientes/${slug}/marca.json).`;
-  const anx = anexos.length ? `\nArquivos enviados pelo usuário: ${anexos.join(', ')}. Se forem fotos de produto, recorte com node motor/imagem.mjs recortar (use --ia se o fundo não for liso), confira o recorte e cadastre o produto no marca.json.` : '';
+  const anx = anexos.length ? `\nArquivos enviados pelo usuário: ${anexos.join(', ')}. Se forem fotos de produto, recorte com node motor/imagem.mjs recortar (IA com borda limpa), confira o recorte e cadastre o produto no marca.json.` : '';
   const ped = `${produto ? `\nProduto: "${produto}" (chave em produtos do marca.json, use a foto oficial dele).` : ''}\nPedido do usuário: """${pedido}"""`;
   const peca = `Salve o spec em saida/${slug}/specs/ com "saida": "saida/${slug}/<nome-curto>" e renderize com node motor/render.mjs <spec>. Revise as imagens geradas e corrija o que precisar.`;
   const t = {
@@ -196,7 +196,7 @@ function ferramentas() {
   ESTADO_FERRAMENTAS = {
     ffmpegSkill: fs.existsSync(path.join(FFSK, 'caption.py')),
     fasterWhisper: py('faster_whisper'),
-    backgroundremover: py('backgroundremover'),
+    backgroundremover: py('rembg'),
     claude: fs.existsSync(claudeBin()) || spawnSync(claudeBin(), ['--version']).status === 0,
     motor: fs.existsSync(P('motor', 'node_modules')),
   };
@@ -307,7 +307,7 @@ rota('POST', '/api/clientes/:slug/recortar', async (req, b, { slug }) => {
   fs.mkdirSync(path.dirname(sai), { recursive: true });
   const j = novoJob(`Recorte: ${k}`, slug);
   executar(j, async () => {
-    await rodar(j, process.execPath, [P('motor', 'imagem.mjs'), 'recortar', ent, sai, '--escala', String(b.escala || 1), ...(b.modo === 'ia' ? ['--ia'] : ['--tol', String(b.tol || 30)])]);
+    await rodar(j, process.execPath, [P('motor', 'imagem.mjs'), 'recortar', ent, sai, '--escala', String(b.escala || 1), ...(b.modo === 'simples' ? ['--simples', '--tol', String(b.tol || 30)] : [])]);
     const m = lerJson(path.join(d, 'marca.json'));
     m.produtos ||= {}; m.produtos[k] = { ...(m.produtos[k] || {}), nome: m.produtos[k]?.nome || b.nome || k, foto: `produtos/${k}.png` };
     salvarJson(path.join(d, 'marca.json'), m);

@@ -35,7 +35,7 @@ Você é o diretor de arte e o redator. O motor cuida de grid, tipografia, anima
 - `fontes`: nomes do Google Fonts. Pares que funcionam: Fraunces + Inter (premium), Playfair Display + Manrope (luxo), Montserrat + Inter (moderno), Poppins + Poppins (varejo), DM Serif Display + DM Sans (editorial).
 - `logo`: PNG transparente, de preferência versão clara para `premium`. Sem logo, usa o nome na fonte de título.
 - Fotos de produto: PNG com fundo transparente, pelo menos 1200 px de altura.
-- Foto com fundo liso (branco, bege, cinza)? Recorte local, grátis: `node motor/imagem.mjs recortar <foto> <saida.png> [--crop x,y,w,h] [--escala 2] [--tol 30] [--apagar "x,y x,y ...; ..."]`. Foto com cenário ou fundo irregular: acrescente `--ia` (IA local, backgroundremover; ~20 s por foto). `--crop` tira um produto de uma foto com vários; `--apagar` remove outro produto encostado; se o recorte comer a borda clara do produto, baixe `--tol` (12–20). Confira cada recorte sobre fundo escuro. Sempre confira o recorte.
+- Foto com fundo: recorte local e grátis com `node motor/imagem.mjs recortar <foto> <saida.png> [--crop x,y,w,h] [--escala 2] [--apagar "x,y x,y ...; ..."]`. Ele usa IA (BiRefNet, ~20 s por foto) e limpa a borda: encolhe a máscara e tira a cor do fundo antigo dos pixels da borda, então não fica halo branco. `--crop` tira um produto de uma foto com vários; `--apagar` remove outro produto encostado; `--simples` usa o método antigo sem IA (só para fundo liso, borda pior). Confira cada recorte sobre fundo escuro e com zoom na borda.
 - Foto pequena (menos de 800 px) fica levemente desfocada mesmo com `--escala`: avise o usuário e peça a foto oficial em alta.
 
 ## Layouts

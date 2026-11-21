@@ -1,7 +1,7 @@
 // Recorte de produto, local e sem custo.
-//   node motor/imagem.mjs recortar <entrada> <saida.png> [--crop x,y,w,h] [--tol 30] [--escala 2] [--ia]
-// Padrão (fundo liso: branco, bege, cinza): preenche a partir das bordas, então texto branco do rótulo fica intacto.
-//   --ia     fundo com cenário: usa o backgroundremover (IA local, U2-Net; pip install backgroundremover)
+//   node motor/imagem.mjs recortar <entrada> <saida.png> [--crop x,y,w,h] [--escala 2] [--simples [--tol 30]]
+// Padrão: IA local BiRefNet (motor/recorte.py, pip install rembg) + limpeza da borda, sem halo do fundo.
+//   --simples  sem IA: preenche o fundo liso a partir das bordas (rápido; use só se o rembg não estiver instalado)
 //   --crop   recorta um produto de uma foto com vários (coordenadas da imagem original)
 //   --escala amplia com lanczos antes do recorte (fotos pequenas da internet)
 //   --apagar "x,y x,y x,y ...; x,y ..."  apaga polígonos (coordenadas da original, separados por ;), p.ex. outro produto encostado
@@ -77,9 +77,10 @@ export function recortar(entrada, saida, { crop, tol = 30, escala = 1, apagar, i
     const prep = `${saida}.prep.png`, cut = `${saida}.ia.png`;
     const r1 = spawnSync(ffmpeg, ['-y', '-loglevel', 'error', '-i', entrada, '-vf', f, '-frames:v', '1', prep]);
     if (r1.status !== 0) throw new Error(String(r1.stderr));
-    const r2 = spawnSync(process.platform === 'win32' ? 'python' : 'python3', ['-m', 'backgroundremover.cmd.cli', '-i', prep, '-o', cut], { encoding: 'utf8' });
+    // Upscaled photos get a wider fringe, so the mask shrinks a little more.
+    const r2 = spawnSync(process.platform === 'win32' ? 'python' : 'python3', [new URL('./recorte.py', import.meta.url).pathname.replace(/^\/(\w:)/, '$1'), prep, cut, 'birefnet-general', String(Math.max(1, Math.round(escala)))], { encoding: 'utf8', env: { ...process.env, PYTHONIOENCODING: 'utf-8' } });
     fs.rmSync(prep, { force: true });
-    if (r2.status !== 0 || !fs.existsSync(cut)) throw new Error(`backgroundremover falhou (instale com: pip install backgroundremover): ${(r2.stderr || '').trim().split(/\r?\n/).at(-1)}`);
+    if (r2.status !== 0 || !fs.existsSync(cut)) throw new Error(`Recorte com IA falhou (instale com: pip install rembg): ${(r2.stderr || '').trim().split(/\r?\n/).at(-1)}`);
     fonte = cut; f = 'null';
   }
   const { w, h, px } = decodificar(fonte, f);
@@ -99,7 +100,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const [cmd, entrada, saida, ...a] = process.argv.slice(2);
   const opt = n => { const i = a.indexOf(`--${n}`); return i < 0 ? undefined : a[i + 1]; };
   try {
-    if (cmd === 'recortar') console.log(recortar(entrada, saida, { crop: opt('crop')?.split(',').map(Number), tol: +(opt('tol') ?? 30), escala: +(opt('escala') ?? 1), apagar: opt('apagar')?.split(';').map(poly => poly.trim().split(/\s+/).map(p => p.split(',').map(Number))), ia: a.includes('--ia') }));
+    if (cmd === 'recortar') console.log(recortar(entrada, saida, { crop: opt('crop')?.split(',').map(Number), tol: +(opt('tol') ?? 30), escala: +(opt('escala') ?? 1), apagar: opt('apagar')?.split(';').map(poly => poly.trim().split(/\s+/).map(p => p.split(',').map(Number))), ia: !a.includes('--simples') }));
     else if (cmd === 'teste') {
       // White 20x20 with a red square and a white "label" pixel inside it: the inner white must survive.
       const w = 20, h = 20, px = Buffer.alloc(w * h * 4, 255);
